@@ -6,6 +6,7 @@
 		global $db_connected, $db_name, $db_user, $db_pass, $db_host, $dbc;
 		try {
 		    $dbc = new PDO("mysql:host=$db_host;dbname=$db_name;charset=utf8", $db_user, $db_pass);
+		    $dbc->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 		    return true;
 		} catch (PDOException $e) {
 		    echo 'Connection failed: ' . $e->getMessage();
@@ -25,7 +26,7 @@
 		if (!$db_connected) return false;
 		try {
 			$sql = "INSERT INTO Users (email,password) VALUES (:user_email,:user_password)";
-			$q = $conn->prepare($sql);
+			$q = $dbc->prepare($sql);
 			$q->execute(array(':user_email'=>$user_email, ':user_password'=>$user_password));
 		} catch(PDOException $e) {
 		    echo 'ERROR: ' . $e->getMessage();
@@ -53,5 +54,23 @@
 		}
 		return false;
 	}
-	
+	function add_reference($ref_url){
+		// add reference url
+		global $dbc, $db_connected;
+		if (!$db_connected) return 1;
+		if (!$_SESSION['user_logged']) return 2;
+		try {
+			$sql = "INSERT INTO Ref (url) VALUES (:ref_url)";
+			$q = $dbc->prepare($sql);
+			$q->bindParam(':ref_url', $ref_url);
+			$q->execute();
+			return 0;
+		} catch(PDOException $e) {
+		    echo 'ERROR: ' . $e->getMessage();
+		    error_log('ERROR: ' . $e->getMessage());
+	        return 3;
+		}
+		// call hit creation for job 1
+		return 4;
+	}
 ?>

@@ -12,7 +12,6 @@
 			width: 100%;
 			height: 100%;
 			position: relative;
-			background-color: red;
 		}
 		body{
 			height:100%;
@@ -22,8 +21,8 @@
 			font-family: Helvetica, Arial;
 		}
 		#left{
-			width: 25%;
-			background-color: #333;
+			width: 20%;
+			background-color: #171E38;
 			height: 100%;
 			z-index: 0;
 			float: left;
@@ -31,16 +30,17 @@
 		}
 		#right{
 			float: left;
-			width: 75%;
+			width: 80%;
 			height: 100%;
 			background-color: #BBB;
 			z-index: 0;
 		}
-		#banner{
+		#banner_holder{
 			z-index: 2;
 			position: absolute;
-			top: 13%;
-			left: 25%;
+			top: 40%;
+			margin-top:-50px;
+			left:50%;
 			margin-left: -309;
 			background-color: #EEE;
 			opacity: 1;
@@ -56,7 +56,7 @@
 			line-height:30px;
 			font-size:18px;
 			background-color:#AAA;
-			color:#333;
+			color:#171E38;
 			position:absolute;
 			bottom:0px;
 			text-align: center;
@@ -113,29 +113,35 @@
 		<div id="left">
 			<div id="login_container">
 				<div id="login_control">
-					<?php 
-						if (isset($_SESSION['user_logged']))
-							print '<a id="logout_link" href="logout.php">Logout</a>'; 
-						else 
-							print '<h3 onclick="login_slide_toggle()">Click Here to Login</h3>'
-					?>
+				<?php 
+					if ($_SESSION['user_logged']){
+						print '<a href="logout.php">Logout</a>';
+					} else {
+						print '<h3 onclick="login_slide_toggle()">Click Here to Login</h3>';
+					}
+				?>
 				</div>
 				<div id="login_handler">
 					<form method="POST" action="login.php">
-					<table>
+					<table style="margin-top:10px;">
 						<tr><td style="text-align:right; color:#333; font-weight:bold;">Username/Email</td><td><input type="text" id="login_email" name="login_email" class="login_text"></td></tr>
 						<tr><td style="text-align:right; color:#333; font-weight:bold;">Password</td><td><input type="password" id="login_password" name="login_password" class="login_text"></td></tr>
 						<tr><td style="text-align:center;" colspan="2"><input type="submit" id="login_submit" name="login_submit" class="login_submit"></td></tr>
 					</table>
-					
+					</form>
 				</div>
 			</div>
 		</div>
-		<div id="right">
-			
+		<div id="right"></div>
+		<div id="banner_holder" style="width:40%;">
+			<img id="banner" style="width:100%" src="banner.png">
+			<form method="post" action="submitref.php">
+				<input type="text" id="ref_text" name="ref_text" value="Enter URL" style="background-color:#EEE; color:#333; width:80%; height:40px;line-height:20px; margin-top:10px; font-size:18px; border:2px solid #CCC; outline:none;text-indent:5px;">
+				<input type="submit" id="ref_submit" name="ref_submit" style="width:19%; height:40px; background-color:#EEE;font-weight:bold; font-family:arial; border:2px solid #CCC; outline:none;" value="Get Reference">
+			</form>
 		</div>
-		<img id="banner" src="banner.png">
 	</div>
+
 
 
 </body>
