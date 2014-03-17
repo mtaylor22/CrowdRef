@@ -1,0 +1,13 @@
+AMT REST API
+
+This package is placed by the author in the public domain.
+
+This package is written for php 5.3+. It uses namespaces. It implements the
+whole of the (usable) Amazon Mechanical Turk API over the Amazon REST interface.
+
+The aim has not been to impose an object-oriented view of the Amazon API - whose object decomposition must necessarily depend upon individual applications - but rather to apply a low-level object-oriented approach to its implementation whilst making the best use of the facilities built into PHP.
+
+This package divides the AMT API into four main chunks: the core, the
+qualifications API, the notifications API, and the notification response class. The latter provides the basis for a web service to receive AMT notifications. Many AMT implementations will need only the core.
+
+The written documentation has been designed to co-exist with automatically generated documentation using the docblox PEAR package. Instructions on generating the automatic documentation are included in the installation documentation.

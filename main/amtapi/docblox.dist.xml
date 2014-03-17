@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<docblox>
+  <title>AMT REST API for PHP</title>
+  <parser>
+    <target>doc</target>
+  </parser>
+  <transformer>
+    <target>doc</target>
+  </transformer>
+  <files>
+    <file>amt_rest_api.php</file>
+    <file>amt_qual.php</file>
+    <file>amt_notification.php</file>
+    <file>csvwriter.php</file>
+    <file>amt_config.php</file>
+  </files>
+</docblox>

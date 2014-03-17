@@ -44,6 +44,7 @@
 			$data = $dbc->query('SELECT * FROM Users WHERE email = ' . $dbc->quote($user_email) . ' AND password = ' . $dbc->quote($user_password));
 		    foreach($data as $row) {
 		        $_SESSION['user_logged'] = true;
+		        $_SESSION['email'] = $user_email;
 		        return true;
 		    }
 		} catch(PDOException $e) {
@@ -60,9 +61,10 @@
 		if (!$db_connected) return 1;
 		if (!$_SESSION['user_logged']) return 2;
 		try {
-			$sql = "INSERT INTO Ref (url) VALUES (:ref_url)";
+			$sql = "INSERT INTO Ref (url, user) VALUES (:ref_url, :user)";
 			$q = $dbc->prepare($sql);
 			$q->bindParam(':ref_url', $ref_url);
+			$q->bindParam(':user', $_SESSION['email']);
 			$q->execute();
 			return 0;
 		} catch(PDOException $e) {

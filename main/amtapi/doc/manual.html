@@ -1,0 +1,2047 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+      "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+  <title>Amazon Mechanical Turk PHP Rest API</title>
+  <style type="text/css">
+
+pre.code {margin-left:2em;background-color:#bfbfbf;}
+col.code { font-family:monospace; }
+#indexTable { font-size:small; }
+dl {margin-left:1em;}
+ .warning {background-color:#ffff00}
+ .aside {font-size: small;}</style>
+  <meta name="generator" content="Amaya, see http://www.w3.org/Amaya/" />
+  <meta name="Author" content="CPK Smithies" />
+</head>
+
+<body>
+<h1>Amazon Mechanical Turk PHP REST API</h1>
+
+<p>Author: CPKS</p>
+
+<p>Date: <!--$date=-->2011-10-28<!--$--></p>
+
+<h2 id="L28032">1. Table of Contents</h2>
+
+<div class="toc">
+<ul>
+  <li><a href="#L28032">1. Table of Contents</a></li>
+  <li><a href="#L28036">2. Introduction</a></li>
+  <li><a href="#L28043">3. Installation</a></li>
+  <li><a href="#L28047">4. Classes</a></li>
+  <li><a href="#L28088">5. Task Overview</a> 
+    <ul>
+      <li><a href="#L28090">5.1. Handling errors</a></li>
+      <li><a href="#L28094">5.2. Setting things up</a></li>
+      <li><a href="#L28098">5.3. Creating a task</a></li>
+      <li><a href="#L28102">5.4. Receiving notifications</a></li>
+      <li><a href="#L28106">5.5. Running queries</a> 
+        <ul>
+          <li><a href="#Paged">5.5.1. Paged queries</a></li>
+        </ul>
+      </li>
+      <li><a href="#L28138">5.6. Responding to completed tasks</a></li>
+    </ul>
+  </li>
+  <li><a href="#L28142">6. Handling errors</a> 
+    <ul>
+      <li><a href="#L28163">6.1. Handling runtime errors</a></li>
+    </ul>
+  </li>
+  <li><a href="#RegisterHITType">7. Setting up a task: the HITType</a></li>
+  <li><a href="#L28263">8. Creating a HIT or task</a> 
+    <ul>
+      <li><a href="#L28269">8.1. General: HIT status</a></li>
+      <li><a href="#CreateHIT">8.2. External HITs with HITType</a></li>
+    </ul>
+  </li>
+  <li><a href="#L28371">9. Receiving Notifications</a> 
+    <ul>
+      <li><a href="#L28375">9.1. Setting up Notifications</a> 
+        <ul>
+          <li><a href="#TestEventNotification">9.1.1. Testing
+          Notifications</a></li>
+          <li><a href="#SetHITTypeNotification">9.1.2. Setting up Notifications
+            for real</a></li>
+        </ul>
+      </li>
+      <li><a href="#L28406">9.2. Handling Notifications</a></li>
+    </ul>
+  </li>
+  <li><a href="#L28469">10. Running Queries</a> 
+    <ul>
+      <li><a href="#GetAccountBalance">10.1. Account balance</a></li>
+      <li><a href="#L28482">10.2. Hit Types</a></li>
+      <li><a href="#SearchHITs">10.3. Search All HITs</a></li>
+      <li><a href="#GetReviewableHITs">10.4. Search reviewable and/or reviewing
+        HITs</a></li>
+      <li><a href="#GetHIT">10.5. Getting HIT details</a></li>
+      <li><a href="#GetBonusPayments">10.6. Bonus payments</a></li>
+      <li><a href="#GetRequesterStatistic">10.7. Retrieving Statistics</a></li>
+    </ul>
+  </li>
+  <li><a href="#CompletedHITs">11. Responding to Completed HITs</a> 
+    <ul>
+      <li><a href="#GetAssignmentsForHIT">11.1. Getting workers' answers</a> 
+        <ul>
+          <li><a href="#GetFileUploadURL">11.1.1. Uploaded file answers</a></li>
+        </ul>
+      </li>
+      <li><a href="#RespondingAssignments">11.2. Responding to submitted
+        assignments</a> 
+        <ul>
+          <li><a href="#ApproveAssignment">11.2.1. Paying the worker</a></li>
+          <li><a href="#GrantBonus">11.2.2. Paying the worker a bonus</a></li>
+          <li><a href="#RejectAssignment">11.2.3. Rejecting the answer</a></li>
+          <li><a href="#BlockWorker">11.2.4. Blocking the worker</a></li>
+          <li><a href="#NotifyWorkers">11.2.5. Sending workers a
+          message</a></li>
+          <li><a href="#UnblockWorker">11.2.6. Reversing a block</a></li>
+        </ul>
+      </li>
+      <li><a href="#L28982">11.3. Tinkering with HITs</a> 
+        <ul>
+          <li><a href="#DisableHIT">11.3.1. Early HIT deletion</a></li>
+          <li><a href="#DisposeHIT">11.3.2. Late HIT deletion</a></li>
+          <li><a href="#ForceExpireHIT">11.3.3. Expiring a HIT</a></li>
+          <li><a href="#ChangeHITTypeOfHIT">11.3.4. Changing the
+          HITType</a></li>
+          <li><a href="#ExtendHIT">11.3.5. Extending a HIT</a></li>
+          <li><a href="#SetHITAsReviewing">11.3.6. Reviewing a HIT</a></li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li><a href="#L29092">12. Qualifications</a> 
+    <ul>
+      <li><a href="#CreateQualificationType">12.1. Qualification Type Setup</a> 
+        <ul>
+          <li><a href="#L29212">12.1.1. Setting up with test</a></li>
+          <li><a href="#L29222">12.1.2. Allowing retakes</a></li>
+          <li><a href="#L29233">12.1.3. Auto-granted qualifications</a></li>
+        </ul>
+      </li>
+      <li><a href="#UpdateQualificationType">12.2. Altering a
+        QualificationType</a></li>
+      <li><a href="#GetQualificationRequests">12.3. Polling for qualification
+        requests</a></li>
+      <li><a href="#Scoring">12.4. Scoring qualification tests</a></li>
+      <li><a href="#L29340">12.5. Restricting access to HITs</a></li>
+      <li><a href="#L29362">12.6. Creating qualification requirements</a> 
+        <ul>
+          <li><a href="#L29369">12.6.1. Creating a score qualification
+            requirement</a></li>
+          <li><a href="#L29421">12.6.2. Creating a locale qualification
+            requirement</a></li>
+          <li><a href="#L29448">12.6.3. Creating a predicate qualification
+            requirement</a></li>
+        </ul>
+      </li>
+      <li><a href="#L29454">12.7. Using qualification requirements</a></li>
+      <li><a href="#AssignQualification">12.8. Assigning a qualification
+        directly</a></li>
+      <li><a href="#RevokeQualification">12.9. Revoking a qualification</a></li>
+      <li><a href="#GetQualificationScore">12.10. Obtaining qualification
+        scores</a></li>
+      <li><a href="#UpdateQualificationScore">12.11. Adjusting qualification
+        score</a></li>
+      <li><a href="#SearchQualificationTypes">12.12. Searching Qualification
+        Types</a></li>
+      <li><a href="#GetQualificationType">12.13. Inspecting a Qualification
+        Type</a></li>
+      <li><a href="#GetQualificationsForQualificationType">12.14. Searching
+        Qualifications</a></li>
+      <li><a href="#GetHITsForQualificationType">12.15. Searching Qualified
+        HITs</a></li>
+      <li><a href="#DisposeQualificationType">12.16. Deleting qualification
+        types</a></li>
+    </ul>
+  </li>
+  <li><a href="#L29650">13. API Index</a></li>
+  <li><a href="#L30260">14. Not Implemented</a></li>
+</ul>
+</div>
+
+<h2 id="L28036">2. Introduction</h2>
+
+<p>This document complements the <a href="index.html">API documentation
+generated from the source code</a>. For details about number and types of
+arguments, etc., please see that. Instead, this document seeks to introduce the
+PHP <abbr title="Application Programming Interface">API</abbr> using a
+task-oriented approach, with sample code to illustrate how to use the PHP
+objects implementing the <abbr title="Amazon Mechanical Turk">AMT</abbr> API.
+The <a href="#L28088">Task Overview</a> section shows the way I have analyzed
+the task tree and applied it to this conspectus of the API.</p>
+
+<h2 id="L28043">3. Installation</h2>
+
+<p>Before using the PHP API, you need to install it on your system. If you are
+using PHP 5.3, this is not too difficult, as there are no special
+dependencies.</p>
+
+<p>You must create a file amt_keys.php in your include path. This must execute
+the class initialization function to set up your AMT access key ID and secret
+access key. Here is a sample amt_keys.php:</p>
+<pre class="code">&lt;?php
+amt\request::init_class('YOUR_ACCESS_KEY_ID', 'YOUR_SECRET_ACCESS_KEY');</pre>
+
+<p>This file is <code>require</code>d by amt_rest_api.php and will initialize
+the base <code>amt\request</code> class for you.</p>
+
+<p>There is an optional third parameter to
+<code>amt\request::init_class()</code>. This is a boolean value which, if TRUE,
+will send all your subsequent requests to the Sandbox. Alternatively, you can
+call <code>amt\request::set_sandbox_mode()</code>. Once you have set sandbox
+mode, you cannot cancel it for the rest of the run of your script.</p>
+
+<p>For further details, see the <a href="install.html">separate installation
+documentation</a>.</p>
+
+<h2 id="L28047">4. Classes</h2>
+
+<p>Broadly, the classes making up the PHP API are in three categories: request
+classes, response classes and exceptions. A request object is an instance of a
+request class, and facilitates the set-up of a request to the AMT service. Some
+requests simply cause an action to occur (e.g. blocking a worker) and return no
+useful information. Others return simple data types (e.g. account balance).
+These request objects have an <code>execute()</code> function that will return
+the useful return value, if any.</p>
+
+<p>Some requests, on the other hand, may return relatively complex datasets or
+lists of datasets. In this case, a response object becomes necessary. For the
+most part response objects are either simple data objects (all data members
+public) or are descendants of <code>\ArrayObject</code> (accessible by array
+keys or object properties). Large resultsets are iterable using a standard
+iterator such as <code>\ArrayIterator</code> - these classes implement
+<code>\IteratorAggregate</code>. Resultset elements may be simple types, e.g.
+strings, or they may be response objects of a more complex kind. I am not
+documenting the aggregates here, just the objects they contain.</p>
+
+<p>Finally, there are the exception classes. All errors are handled through
+exceptions. Invalid arguments result in (no surprises here)
+<code>\InvalidArgumentException</code> and other <code>\LogicException</code>s
+being thrown. Calling <code>execute()</code> without setting up required
+parameters, calling setup functions twice and similar misdemeanours result in
+<code>\BadMethodCallException</code>. I/o errors (e.g. response timeout) result
+in <code>\RuntimeException</code>. Finally, any error returned by the AMT
+service will result in an <code><a
+href="db_amt_rest_api.html#%5Camt%5CException">amt\Exception</a></code> - which
+extends <code>\RuntimeException</code>.</p>
+
+<h2 id="L28088">5. Task Overview</h2>
+
+<h3 id="L28090">5.1. Handling errors</h3>
+
+<p>This will involve embedding your API calls in a try block and handling
+exceptions in corresponding catch blocks. This API has been designed so that,
+if you keep tabs on the things your application needs to know, you should not
+need to catch exceptions. Further detail appears <a
+href="#L28142">below</a>.</p>
+
+<h3 id="L28094">5.2. Setting things up</h3>
+
+<p>Before getting any useful results from the AMT, it will be necessary to set
+up the general task parameters you intend to use - in AMTese, a
+<dfn>HITType</dfn>. If you intend to require your workers to take a
+qualification test, you will also need to create a <a
+href="#qualificationtype">QualificationType</a>, which is then attached to the
+HITType.</p>
+
+<h3 id="L28098">5.3. Creating a task</h3>
+
+<p>When you create a <acronym title="Human Intelligence Task">HIT</acronym>,
+you refer to the HITType for many of the details; others are task-specific.</p>
+
+<h3 id="L28102">5.4. Receiving notifications</h3>
+
+<p>While your HIT is running, you can optionally receive notifications from the
+AMT service that will tell your application what is going on. These may trigger
+queries.</p>
+
+<h3 id="L28106">5.5. Running queries</h3>
+
+<p>The AMT service supports numerous queries, some of which are essential for
+the most basic operation, e.g. retrieving the results of the workers'
+assignments. If you use qualification tests, you may need to poll the service
+occasionally to get workers' qualification requests.</p>
+
+<h4 id="Paged"><a>5.5.1. Paged queries</a></h4>
+
+<p>Some queries solicit lists of results, some of which might be quite rich in
+properties. Depending on your use of the service, these lists might be quite
+big. Therefore, the AMT server frequently delivers chunked or "paged"
+responses. In these cases, the AMT API allows you to select a number of common
+options:</p>
+<dl>
+  <dt>sort property</dt>
+    <dd>The property on which to sort, e.g. time, HITId</dd>
+  <dt>sort direction</dt>
+    <dd>Ascending or Descending</dd>
+  <dt>page size</dt>
+    <dd>Default is 10. If you're expecting thousands of results, it might be
+      wise to up this a bit.</dd>
+  <dt>page number</dt>
+    <dd>You don't need to worry about this: the PHP API insulates you from the
+      sordid details of paging.</dd>
+</dl>
+
+<p>If you don't need to customize these properties, you don't need to use the
+request classes provided in the PHP API. Instead, you can simply use response
+objects which act as aggregates of whatever type you're interested in.</p>
+
+<h3 id="L28138">5.6. Responding to completed tasks</h3>
+
+<p>Once you have retrieved details of workers' activity, your application may
+need to react: in the first place, simply to store their answers, but also
+maybe to approve, reward, disapprove or even block a particular worker. These
+actions are typically conducted in the context of the appropriate response
+object.</p>
+
+<h2 id="L28142">6. Handling errors</h2>
+
+<p>If you receive an exception of type <code>\LogicException</code> (typically
+<code>\InvalidArgumentException</code>, <code>\LengthException</code>,
+<code>\OutOfRangeException</code>), it may be due to inattentive reading of
+Amazon's API documentation. The PHP API implemented herein tries to check for
+all invalid arguments before you get as far as the AMT server. You should not
+expect to receive an exception in this class once your code is beyond the
+testing stage.</p>
+
+<p>Exceptions of type <code>\BadMethodCallException</code> will be due to
+misunderstandings of the PHP API wrapping. Examples might include repeated
+calls to set the parameters on a request object intended for once-only use.
+Again, you should not expect to receive an exception in this class once your
+code is beyond the testing stage.</p>
+
+<h3 id="L28163">6.1. Handling runtime errors</h3>
+
+<p>Exceptions of type <code>\RuntimeException</code> are thrown when external
+resources are defective, responses from the AMT service are not understood by
+the PHP API, or an error is reported by the AMT service. In the latter case, an
+<code>amt\Exception</code> is thrown. <code>amt\Exception</code> extends
+\<code>RuntimeException</code> with methods to return the XML response from the
+AMT service, and to dump this response to file or to the console. For example,
+suppose that we try to get the details of a non-existent HIT:</p>
+<pre class="code">try {
+  $r = new amt\results('ThisIsAnInvalidHitId');
+}
+catch (amt\Exception $e) {
+  error_log($e-&gt;getMessage() . $e-&gt;xmldata());
+}</pre>
+
+<p>When an AMT error occurs, it is theoretically possible for multiple error
+items to be returned. These are parsed into the exception message as
+follows:</p>
+
+<p><samp>error_code: error_message</samp></p>
+
+<p>Each code/message pair is separated by a newline. NB the codes are strings,
+not integers.</p>
+
+<p>(An <code>amt\Exception</code> may also be thrown if the XML structure of
+the response is unexpected. In this case, there will be no colon in the
+message. If this happens, it is due to an error in the PHP API and is my fault,
+not yours.)</p>
+
+<h2 id="RegisterHITType">7. Setting up a task: the HITType</h2>
+
+<p>The HITType defines the following basic parameters of your task:</p>
+<dl>
+  <dt>reward<br />
+  </dt>
+    <dd>An amount (float) in US dollars</dd>
+  <dt>title</dt>
+    <dd>HIT Title</dd>
+  <dt>desc</dt>
+    <dd>Description of the HIT</dd>
+  <dt>duration</dt>
+    <dd>No. of seconds allowed for a worker to complete the HIT once he has
+      accepted it</dd>
+  <dt>keywords</dt>
+    <dd>Optionally, comma-separated list of search words</dd>
+  <dt>auto-approve</dt>
+    <dd>No. of seconds before the HIT is automatically approved, or FALSE to
+      disable this feature</dd>
+  <dt>qualification requirements</dt>
+    <dd>Optionally, a set of qualification requirements: a worker must have all
+      of these in order to be able to accept (or, if you so decide, even view)
+      the HIT.</dd>
+</dl>
+
+<p>The request object that does the work here is <code><a
+href="db_amt_rest_api.html#%5Camt%5Chittype_request">amt\hittype_request</a></code>.
+There are two ways to supply the parameters listed above. One is to call the
+<code>set_params()</code> method; the other is to read the settings from a
+configuration file. Here we see an example of direct set-up:</p>
+<pre class="code">$r = new amt\hittype_request;
+$r-&gt;set_params(0.05, 'General Knowledge Test',
+ 'This test includes ten fairly simple questions to test your general knowledge.',
+ 80, 'general knowledge', 3600);
+$hittype_id = $r-&gt;execute();</pre>
+
+<p>This is an example of the nearly-ubiquitous <code>execute()</code> method
+returning a simple type, here a string. The HITTypeId is a unique identifier
+which your application should ideally manage. If you call the same function
+twice with exactly the same parameters, it is not an error: you will simply get
+returned the same HITTypeId. Incidentally, if you want to dispense with a
+HITType, there is no API call to do so. Instead, it will linger in some lonely
+wardrobe on the AMT server like a pensioner's wedding dress.</p>
+
+<p>The second way to set up a HITType is to use a configuration file. Here is
+an example configuration file:</p>
+<pre class="code">######################################
+## HIT Properties
+######################################
+
+title:General Knowledge Test
+description:This test includes ten fairly simple questions to test your general knowledge.
+keywords:general knowledge
+reward:0.05
+
+######################################
+## HIT Timing Properties
+######################################
+
+assignmentduration:80
+# this HIT Lifetime value is 60*5 = 5 minutes
+hitlifetime:300
+
+# this Auto Approval period is 60*60*12 = 12 hours
+autoapprovaldelay:43200</pre>
+
+<p>Note that the keys are case-insensitive.</p>
+
+<p>Here is an example of the use of a configuration file:</p>
+<pre class="code">$r = new amt\hittype_request;
+$r-&gt;read_config('file.conf');
+// code to prepare array $qr of amt\qualification_requirements...
+$r-&gt;set_qual_requirements($qr);
+$r-&gt;execute();</pre>
+
+<p>If you choose to take the configuration file route, you will need to have
+amt_conf.php on your include path. Otherwise, you don't need it.</p>
+
+<p>Further information about setting qualification requirements is contained in
+the separate Qualifications section.</p>
+
+<h2 id="L28263">8. Creating a HIT or task</h2>
+
+<p>According to the underlying API, a HIT can be created in four ways: with or
+without a HITType, and with an internal or external definition. HITs without a
+HITType have all their HITType parameters specified directly. External HITs are
+specified using the URL of a task page located on the caller's server, whereas
+internal HITs are specified in full using a subset of HTML and are located on
+the AMT web site.</p>
+
+<p>Currently, this API caters only for HITs with a HITType specified, and only
+for external HITs.</p>
+
+<h3 id="L28269">8.1. General: HIT status</h3>
+
+<p>However a HIT is created, it will be available to be accepted by a worker
+throughout its lifetime.</p>
+
+<p>A HIT may have any one of the following status:</p>
+<dl>
+  <dt id="Assignable">Assignable</dt>
+    <dd>The HIT has not expired and fewer than the maximum assignments (worker
+      acceptances) have taken place. In this state, the HIT is viewable and
+      acceptable by new workers.</dd>
+  <dt id="Unassignab">Unassignable</dt>
+    <dd>The HIT has not expired, but the maximum assignments (worker
+      acceptances) have occurred. Therefore, the HIT results are not yet all
+      ready to be received, but the HIT will not be available to new
+    workers.</dd>
+  <dt><a id="Reviewable">Reviewable</a></dt>
+    <dd>When a HIT is in this state, it is possible to query the workers'
+      answers. Either the HIT has expired, or the maximum number of assignments
+      has completed. In either case, the HIT is not available to new workers.
+      If the maximum number of assignments has not completed, the HIT must have
+      expired and can be revived by extending its lifetime. If its lifetime has
+      not expired, all assignments must have completed and it may be revived by
+      increasing its maximum number of assignments.</dd>
+  <dt id="Reviewing">Reviewing</dt>
+    <dd>This is a special status requested by the requester. It can only be
+      assigned to a HIT when the HIT is in the Reviewable state. It is used to
+      filter HIT query operations and is designed to allow multiple requester
+      processes to analyze reviewable HITs concurrently.</dd>
+  <dt id="Disposed">Disposed</dt>
+    <dd>The requester has asked for the HIT to be disposed, i.e. deleted. When
+      a HIT is in this state, it can be regarded as being in the mortuary
+      department. It remains only for the AMT equivalent of street sweepers or
+      grave robbers to toss its defunct body into the canal, and it will no
+      longer be visible to the requester or to anyone else.</dd>
+</dl>
+
+<h3 id="CreateHIT"><a>8.2. External HITs with HITType</a></h3>
+
+<p>To specify an external HIT, it is necessary to develop a static or dynamic
+page containing a web form and locate it in a publicly accessible area of an
+open web site. When the HIT is created, one need specify only the URL of this
+page, which is then relayed to the AMT worker by the AMT server. The advantages
+of this form of hit are that:</p>
+<ul>
+  <li>the HIT page need not be specified in full;</li>
+  <li>the HITType parameters need not be fully specified in the HIT creation
+    request;</li>
+  <li>the author retains full control over the styling and scripting of the HIT
+    page;</li>
+  <li>if it is desired to cache HIT results on the AMT server, these are
+    categorized according to HITType;</li>
+  <li>this is the leanest and most efficient way to issue a HIT request.</li>
+</ul>
+
+<p>That said, a good number of parameters must be specified when the individual
+HIT is created. These are:</p>
+<dl>
+  <dt>HITType</dt>
+    <dd>The HITTypeId of the HIT, as returned by the call to
+      <code>amt\hittype_request::execute()</code>.</dd>
+  <dt>URL</dt>
+    <dd>The URL of the page, hosted on a caller's web site, that contains the
+      HIT form.</dd>
+  <dt>annotation</dt>
+    <dd>An arbitrary string, used by the requester to identify the HIT; can be
+      blank.</dd>
+  <dt>lifetime</dt>
+    <dd>An integer value representing the number of seconds for which the HIT
+      will remain available to AMT workers. After this number of seconds has
+      elapsed, the HIT becomes "expired". Once the HIT is expired, it will
+      remain active for workers who have already accepted the task and are
+      still working on it, but will not be made available to anyone else.</dd>
+  <dt>max_assignments</dt>
+    <dd>An integer value representing the number of workers who will be allowed
+      to work on the HIT before it is made unavailable to others.</dd>
+  <dt>frame_height</dt>
+    <dd>The height in pixels of the sub-frame within the AMT-hosted window in
+      which the HIT page appears. This value need not be specified and defaults
+      to 640.</dd>
+</dl>
+
+<p>All of the above parameters are arguments to the constructor of the request
+object, which is an instance of <code><a
+href="db_amt_rest_api.html#%5Camt%5Cexternal_hit_request">amt\external_hit_request</a></code>.
+Here is an example of HIT creation:</p>
+<pre class="code">$hit_type = get_hittype(); // somehow acquire the HITType ID of the HIT
+$job_id = get_job_id();    // somehow identify the specific task
+$url = 'http://my_site/hit_page.php?job_id=' . $job_id;
+$lifetime = 5 * 60;        // The task is expired after 5 minutes
+$job_qty = 5;              // We want 5 workers to have a go at this
+$r = new amt\external_hit_request($hit_type, $url, $job_id, $lifetime, $job_qty);
+$hit_id = $r-&gt;execute();   // after calling this, the HIT is 'assignable'</pre>
+
+<p>Your application will probably need to cache the HITId returned by this
+operation in order to handle the workers' responses.</p>
+
+<p>If this operation successfully completes (i.e., throws no exception), then
+the HIT will be available to AMT workers.</p>
+
+<h2 id="L28371">9. Receiving Notifications</h2>
+
+<p>Optionally, you can set up a notification handler on your server to receive
+notifications from the AMT service when things happen to your HITs. There are a
+number of classes to simplify this task.</p>
+
+<h3 id="L28375">9.1. Setting up Notifications</h3>
+
+<p>There are two request classes that will set up notifications. The first is a
+test notification request, which you may wish to use to see whether your
+handling script is sane. Executing an
+<code>amt\test_notification_request</code> will cause the AMT server to respond
+immediately with a notification to your handler. The second is the real live
+notification request, which you use on the HITType of your HITs to tell the AMT
+server to notify you of certain events.</p>
+
+<h4 id="TestEventNotification"><a>9.1.1. Testing Notifications</a></h4>
+
+<p>Here is how to fire a test notification:</p>
+<pre class="code">$a = array('HITReviewable', 'HITExpired');
+define('URL', 'http://url_of_my_handler.php');
+$r = new amt\test_notification_request('Ping', URL, $a);
+$r-&gt;execute();</pre>
+
+<p>The first parameter of the <a
+href="db_amt_rest_api.html#%5Camt%5Ctest_notification_request"><code>amt\test_notification_request</code></a>
+is the test operation. The 'Ping' operation is a do-nothing operation which
+merely tests the availability of your handler script. To test the functionality
+of your handler more fully, you might substitute 'HITReviewable' or
+'HITExpired' here.</p>
+
+<h4 id="SetHITTypeNotification"><a>9.1.2. Setting up Notifications for
+real</a></h4>
+
+<p>Once you have verified that your notification handler is in place and is
+sane, you activate notifications for your HITs by attaching a notification
+specification to their HITType(s). This is done using an instance of <code><a
+href="db_amt_rest_api.html#%5Camt%5Chittype_notification_request">amt\hittype_notification_request</a></code>.
+You need to specify what kinds of notifications you want: these are specified
+as an array of notification type names. Sample code:</p>
+<pre class="code">$a = array('HITReviewable', 'HITExpired');
+define('URL', 'http://url_of_my_handler.php');
+$r = new amt\hittype_notification_request($hittype_id, URL, $a);
+$r-&gt;execute();</pre>
+
+<h3 id="L28406">9.2. Handling Notifications</h3>
+
+<p>When the AMT server fetches your notification handler URL, it passes the
+notification(s) as GET parameters. All the hard work of parsing them is done by
+<code><a
+href="db_amt_rest_api.html#%5Camt%5Cnotification_response">amt\notification_response</a></code>,
+whose <code>acquire()</code> method returns an iterator over a set of <code><a
+href="db_amt_rest_api.html#%5Camt%5Cnotification">amt\notification</a></code>
+objects. These objects have the following public members:</p>
+<dl>
+  <dt>hit_id</dt>
+    <dd>The HITId of the HIT in question</dd>
+  <dt>event_type</dt>
+    <dd>The event that triggered this particular notification</dd>
+  <dt>hit_type</dt>
+    <dd>The HITTypeId of the HITType of this HIT</dd>
+  <dt>timestamp</dt>
+    <dd>The time of the notification (string)</dd>
+  <dt>time()</dt>
+    <dd>The time of the notification (int)</dd>
+  <dt>assignment_id</dt>
+    <dd>The ID of the assignment - this will be present if you are receiving
+      notifications (say) each time a worker submits your HIT, using the
+      AssignmentSubmitted event type.</dd>
+</dl>
+
+<p>Here is a sample notification handler script, one which is designed to
+handle all the responses to a HIT after it has expired or become <a
+href="#Reviewable">reviewable</a>:</p>
+<pre class="code" id="notification_handler">&lt;?php
+/* AMT notification reception */
+require 'amt_rest_api.php';
+require 'my_pdo_database.php';
+
+try {
+  $DB = new my_pdo_database;
+  $hits_treated = array(); // prevent handling the same HIT twice
+
+  $notifications = amt\notification_response::acquire();
+  // prepare a query to store the worker's answer in the database
+  $s = $DB-&gt;prepare('CALL amt_record_answer(?,?,?,?,?,?)');
+  foreach ($notifications as $n) {
+    if (in_array($n-&gt;hit_id, $hits_treated)) continue; // already done
+    $s-&gt;bindValue(1, $n-&gt;hit_id);
+    $hits_treated[] = $n-&gt;hit_id; // prevent this HIT being handled again
+    $results = new amt\results($n-&gt;hit_id); // get the responses
+    // record result answers in archive
+    foreach ($results as $result) {
+      $result-&gt;approve(); // approve the assignment - worker gets paid
+      $s-&gt;bindValue(2, $result-&gt;accept_time, PDO::PARAM_INT);
+      $s-&gt;bindValue(3, $result-&gt;submit_time, PDO::PARAM_INT);
+      $s-&gt;bindValue(4, $result['WorkerId']);
+      $s-&gt;bindValue(5, $result['AssignmentId']);
+      $s-&gt;bindValue(6, $result['answerField']);
+      $s-&gt;execute();
+    }
+    // now let's delete the HIT
+    $hit = new amt\minimal_hit($n-&gt;hit_id);
+    $hit-&gt;dispose();
+  }
+}
+catch (Exception $e) {
+  error_log($e-&gt;getMessage());
+}
+?&gt;
+OK</pre>
+
+<p>Note that we do everything we can within a try block: the AMT server expects
+a 200 header and we don't want PHP errors to foul this up: the AMT service
+doesn't need to know if our script falls over.</p>
+
+<p class="aside">As a point of interest, the
+<code>amt\notification_response</code> object is necessarily a single, global
+object (there is only one possible set of GET parameters). Rather than using a
+public constructor, therefore, which would allow the construction of a
+plurality of objects, we use the static class method <code>acquire()</code> to
+do the job.</p>
+
+<h2 id="L28469">10. Running Queries</h2>
+
+<p>Before we consider responding to completed tasks, which itself involves
+running certain queries, we turn to some general-purpose queries that may be
+found useful.</p>
+
+<h3 id="GetAccountBalance"><a>10.1. Account balance</a></h3>
+
+<p>This is the simplest query: "How much money is left in my account?"</p>
+
+<p>We use the <code>amt\balance_request</code> class; since there is little
+point in instantiating objects - after all, we just want to know how much - the
+static <code>execute()</code> method of the class returns the amount as a
+string in the form '$9.99'. Example:</p>
+<pre class="code">$balance = amt\balance_request::execute();
+echo "Balance is $balance\n";</pre>
+
+<h3 id="L28482">10.2. Hit Types</h3>
+
+<p>After you've created a few HIT types, you might think it would be useful to
+query the AMT service to get a list of them. Sorry, nothing doing. You must
+keep tabs on them yourself. Note that if you re-register a HIT type with
+exactly the same data as before, you will retrieve the HITTypeId previously
+created.</p>
+
+<p>If your application repeatedly uses only one or two HIT types, it would seem
+to make sense not to re-register them every time you want to create a HIT.</p>
+
+<h3 id="SearchHITs"><a>10.3. Search All HITs</a></h3>
+
+<p>When looking up our HITs, the most general way is to find them all. This
+query introduces us to the <a href="#Paged">paged query</a>, one of the most
+complex query types. If, however, you don't want to tamper with the default
+settings, then all you need to do is to create an <code><a
+href="db_amt_rest_api.html#%5Camt%5Chitlist">amt\hitlist</a></code> object.
+This will give you an iterable collection of <code>amt\hit</code>. For example,
+to list your HITs and their HITTypes:</p>
+<pre class="code">echo "HIT ID: HIT Type IDn\";
+foreach (new amt\hitlist as $hit) echo "$hit-&gt;HITId: $hit-&gt;HITTypeId\n";</pre>
+
+<p>If, however, you want to adjust the sort order or sort attribute, you can do
+it by first setting up your request object and specifying all the parameters
+you want to customize, thus:</p>
+<pre class="code">$r = new amt\search_hits_request;
+$r-&gt;set_sort('HITTypeId', 'Ascending');
+$r-&gt;set_pagesize(50);
+echo "HIT Type ID: HIT ID\n";
+foreach (new amt\hitlist($r) as $hit) echo "$hit-&gt;HITTypeId: $hit-&gt;HITId\n";</pre>
+
+<p>The <code>amt\hitlist</code> object has one potentially useful function: its
+<code>write_csv()</code> function can be called to dump HIT data to a named
+file. If the file is newly-created, a first row of column headers is written
+automatically.</p>
+
+<h3 id="GetReviewableHITs">10.4. Search <a href="#Reviewable">reviewable</a>
+and/or <a href="#Reviewing">reviewing</a> HITs</h3>
+
+<p>You may want to poll for your reviewable HITs (i.e. those whose assignments
+are now complete). As well as selecting from your HITs according to their
+Status, this differs from the <a href="#SearchHITs">standard HIT search</a> in
+that the only data returned for each HIT is the HITId. Effectively this means
+that what is received from this call is a collection of strings. However, these
+strings are wrapped in PHP objects (<code>amt\minimal_hit</code>) that offer
+significant functionality. For details, see the next section, <a
+href="#CompletedHITs">Responding to Completed HITs</a>.</p>
+
+<p>If you don't want to tamper with the default selection, sorting and paging
+settings, you need only use an <a
+href="db_amt_rest_api.html#%5Camt%5Creviewable_hitlist"><code>amt\reviewable_hitlist</code></a>,
+as follows:</p>
+<pre class="code">$r = new amt\reviewable_hitlist;
+foreach ($r as $mhit) {
+  foreach ($mhit-&gt;results() as $result) {
+    // deal with the results
+  }
+}</pre>
+
+<p>To customize the sort order or page size of the result set, you use the <a
+href="db_amt_rest_api.html#%5Camt%5Creviewable_hits_request"><code>amt\reviewable_hits_request</code></a>
+object explicitly. For example:</p>
+<pre class="code">$r = new amt\reviewable_hits_request;
+$r-&gt;set_pagesize(100);
+$r = new amt\reviewable_hitlist($r);</pre>
+
+<p>In the AMT API, it is possible to select HITs with status 'Reviewing' using
+substantially the same code. This is done by including the status in the
+constructor to the request object, as follows:</p>
+<pre class="code">$r = new amt\reviewable_hits_request('Reviewing');
+$r = new amt\reviewable_hitlist($r);</pre>
+
+<p>It is also possible to use this API to include HITs with <em>either</em>
+'Reviewing' or 'Reviewable' status. This is achieved using the pseudo-status
+'Both' as argument to the constructor of the request object.</p>
+
+<p>It is not an error to supply the default argument, 'Reviewable', to the
+request object.</p>
+
+<p><code>amt\reviewable_hitlist</code> inherits
+<code>amt\hitlist::write_csv()</code>.</p>
+
+<h3 id="GetHIT">10.5. Getting HIT details</h3>
+
+<p>If you are looking at your reviewing or reviewable HITs, you will have noted
+that all these searches give you is the HITId. You may need more data about the
+HIT. If you need HITDetail and HITAssignmentSummary information, all you need
+do is create an <a
+href="db_amt_rest_api.html#%5Camt%5Chit_details"><code>amt\hit_details</code></a>
+object from the HITId as follows:</p>
+<pre class="code">$hit = new amt\hit_details($hit_id); // this fetches fuller details of the HIT</pre>
+
+<p>Just what data you receive depends upon the "response groups" you elect to
+receive here. These can be selected by using a request object and setting them.
+The available response groups are:</p>
+<dl>
+  <dt>Minimal</dt>
+    <dd>Just the HIT Id - which presumably you already have.</dd>
+  <dt>HITQuestion</dt>
+    <dd>Includes the HIT's question data (an XML bundle returned as a
+    string).</dd>
+  <dt>HITDetail</dt>
+    <dd>Includes most of the other things you might want to know about a HIT,
+      including its creation time, its AutoApprovalDelayInSeconds, etc.</dd>
+  <dt>HITAssignmentSummary</dt>
+    <dd>Includes numbers of assignments pending, available and completed. (This
+      figure seems not to include assignments already approved!)</dd>
+</dl>
+
+<p>By default, amt\hit (and the request object it uses) will fetch the
+HITDetail and HITAssignmentSummary groups - Minimal being unnecessary. If you
+wish to modify this behaviour, you use an instance of <a
+href="db_amt_rest_api.html#%5Camt%5Cget_hit_request"><code>amt\get_hit_request</code></a>,
+as follows:</p>
+<pre class="code">$r = new amt\get_hit_request($hit_id);
+$r-&gt;add_response_group('HITQuestion');
+$r-&gt;remove_response_group('HITAssignmentSummary');
+// The following would be equivalent:
+//$r-&gt;set_response_groups(array('HITQuestion', 'HITDetail'));
+$hit = $r-&gt;execute(); // returns amt\hit</pre>
+
+<p>The response classes <code><a
+href="db_amt_rest_api.html#%5Camt%5Chit">amt\hit</a></code> and <code><a
+href="db_amt_rest_api.html#%5Camt%5Chit_details">amt\hit_details</a></code> are
+both extensions of <code>\ArrayObject</code>. The properties of their instances
+can be iterated over like an associative array, or they can be accessed as
+object properties, as you prefer. These properties are documented in the <a
+href="http://docs.amazonwebservices.com/AWSMechTurk/2008-08-02/AWSMturkAPI/ApiReference_HITDataStructureArticle.html">Amazon
+reference</a>, and are spelled the same way.</p>
+
+<h3 id="GetBonusPayments">10.6. Bonus payments</h3>
+
+<p>You can retrieve collections of bonus payments, either by HIT or by
+individual assignment. (Multiple payments per individual assignment are
+possible.) This is a <a href="#Paged">paged</a> collection; the Amazon
+documentation is however silent on whether sort options are available. My
+advice: don't push your luck. Twiddling the page size is however possible; as
+usual the default is 10 results per fetch. You could bump this up if you expect
+to receive of the order of hundreds.</p>
+
+<p>The objects in the collection are of type <a
+href="db_amt_rest_api.html#%5Camt%5Cbonus"><code>amt\bonus</code></a>, which
+extends <code>\ArrayObject</code>. All its properties are accessible either via
+array index or as object properties. They are:</p>
+<dl>
+  <dt>WorkerId</dt>
+    <dd>The ID of the worker in question</dd>
+  <dt>AssignmentId</dt>
+    <dd>The ID of the assignment for which the bonus was paid</dd>
+  <dt>BonusAmount</dt>
+    <dd>A float value, being the amount of bonus paid in US dollars</dd>
+  <dt>GrantTime</dt>
+    <dd>A string timestamp</dd>
+  <dt>grant_time</dt>
+    <dd>An integer UNIX-style timestamp, derived from GrantTime</dd>
+  <dt>Reason</dt>
+    <dd>The reason (string) specified when the bonus was paid</dd>
+</dl>
+
+<p>You control the filtering of the selection using the constructor arguments
+of the request object, which is an instance of <a
+href="db_amt_rest_api.html#%5Camt%5Cget_bonus_request"><code>amt\get_bonus_request</code></a>.
+If the second parameter is FALSE or omitted, it's for a HIT, otherwise just for
+a single assignment and the ID provided is understood as an assignment ID.
+Example:</p>
+<pre class="code">$r = new amt\get_bonus_request($hit_id);
+$payments = $r-&gt;execute();
+$total = 0.0;
+foreach ($payments as $b) $total += $b-&gt;BonusAmount;
+echo "Total bonus payout for $hit_id was $total\n";</pre>
+
+<h3 id="GetRequesterStatistic">10.7. Retrieving Statistics</h3>
+
+<p>The AMT service makes some statistics available to you: Amazon documents <a
+href="http://docs.amazonwebservices.com/AWSMechTurk/2008-08-02/AWSMturkAPI/ApiReference_GetRequesterStatisticOperation.html">the
+names of these statistics and their meanings</a>.</p>
+
+<p>As well as specifying the statistic you want, you must specify the time
+period, which is one of OneDay, SevenDays, ThirtyDays or LifeToDate. In the
+case of OneDay only, you can specify a count <var>n</var> &gt; 1, which will
+return you the statistic for the last <var>n</var> days. (In the case of the
+NumberHITSAssignable statistic, you <em>must</em> specify LifeToDate or you
+will get an <code>\InvalidArgumentException</code>. This reflects a limitation
+in the AMT API.) Here is an example:</p>
+<pre class="code">$s = amt\stats_request::execute('NumberHITsReturned', 'OneDay', 5); // last 5 days
+foreach ($s as $t =&gt; $v) {
+  $times[] = $t; // integer timestamp
+  $values[] = $v; // integer in this case
+}</pre>
+
+<p>In most cases it is permissible only to retrieve one statistic (for the
+SevenDays, ThirtyDays or LifeToDate periods). Yet the result is always returned
+as an <code>array</code>, with just one member. The following is neater and to
+be preferred:</p>
+<pre class="code">$n_completed = amt\stats_request::exec1('NumberHITsCompleted', 'ThirtyDays');</pre>
+
+<p>The single value returned by <code>amt\stats_request::exec1()</code> and the
+array values returned by <code>amt\stats_request::execute()</code> are integers
+if counts, else floats. Where the array contains multiple OneDay results, the
+array keys are integer timestamps as returned by time(), and the array is
+sorted by ascending order of key.</p>
+
+<p>This covers all the queries except for Qualifications, which will be found
+in <a href="L29092">a separate section below</a>, and Assignments, which we
+turn to next.</p>
+
+<h2 id="CompletedHITs">11. Responding to Completed HITs</h2>
+
+<p>Once your HIT has been completed and entered the <a
+href="#Reviewable">reviewable</a> state, you will either receive a notification
+or you will poll for results (or perhaps both). You can poll for results using
+the <a href="#GetReviewableHITs"><code>amt\reviewable_hitlist</code>
+search</a>. The most obvious thing you will want to do is to get the answers
+from your workers.</p>
+
+<h3 id="GetAssignmentsForHIT">11.1. Getting workers' answers</h3>
+
+<p>The simplest way to do this, which requires only that you have the ID of the
+HIT, is to use an <code><a
+href="db_amt_rest_api.html#%5Camt%5Cresults">amt\results</a></code> collection.
+This is an iterable collection of instances of <a
+href="db_amt_rest_api.html#%5Camt%5Cassignment"><code>amt\assignment</code></a>,
+and these in turn are what contain your workers' answers. Suppose that your HIT
+form has an entry field called 'Answer1': then the following will collect into
+the <var>$answers</var> array all your workers' answers for the specified
+HITId:</p>
+<pre class="code">$results = new amt\results($hit_id);
+foreach ($results as $asst)
+  $answers[$asst['AssignmentId']] = $asst['Answer1'];</pre>
+
+<p>The <code>amt\assignment</code> object is an <code>\ArrayObject</code> and
+all your answer fields will be available as indices. The corresponding values
+will typically be strings. In addition, the following standard indices
+<em>may</em> be present (see also <a
+href="http://docs.amazonwebservices.com/AWSMechTurk/2008-08-02/AWSMturkAPI/ApiReference_AssignmentDataStructureArticle.html">the
+Amazon documentation for Assignment</a>):</p>
+<dl>
+  <dt>AssignmentId</dt>
+    <dd>Id of the assignment - which may subsequently be used with certain
+      request functions</dd>
+  <dt>WorkerId</dt>
+    <dd>Id of the worker who accepted the HIT</dd>
+  <dt>HITId</dt>
+    <dd>the ID of the HIT, in case you didn't already know</dd>
+  <dt>AssignmentStatus</dt>
+    <dd>Status of the assignment: one of Submitted/Approved/Rejected; it will
+      be absent if the worker has not yet submitted the HIT</dd>
+  <dt>AutoApprovalTime</dt>
+    <dd>The time at which the assignment will automatically be approved -
+      absent if the worker has not yet submitted the HIT</dd>
+  <dt>AcceptTime</dt>
+    <dd>The date and time the HIT was accepted</dd>
+  <dt>SubmitTime</dt>
+    <dd>The date and time the worker submitted the HIT - absent if not yet
+      submitted</dd>
+  <dt>ApprovalTime</dt>
+    <dd>The date and time the requester approved the assignment - absent if not
+      yet approved</dd>
+  <dt>RejectionTime</dt>
+    <dd>The date and time the requester rejected the assignment - absent if not
+      yet</dd>
+  <dt>Deadline</dt>
+    <dd>The date and time by which the assignment will be considered abandoned
+      if not already submitted</dd>
+  <dt>ReqesterFeedback</dt>
+    <dd>The feedback provided by the requester, if any. <strong>NB this is not
+      yet supported</strong> by the PHP API.</dd>
+</dl>
+
+<p>In addition, the <code>amt\assignment</code> may contain the following
+public data members as object properties:</p>
+<dl>
+  <dt>id</dt>
+    <dd>ID of the assignment</dd>
+  <dt>accept_time</dt>
+    <dd>Time the assignment was accepted, as a UNIX-style integer timestamp</dd>
+  <dt>submit_time</dt>
+    <dd>Time the assignment was submitted, as a UNIX-style integer
+    timestamp</dd>
+</dl>
+
+<p>If you want finer control over the paging and sorting of the
+<code>amt\results</code> collection, you can use an instance of <a
+href="db_amt_rest_api.html#%5Camt%5Cresults_request"><code>amt\results_request</code></a>.
+In addition to the <a href="#Paged">normal paging/sorting parameters</a>, you
+can specify the sort property as SubmitTime (the default), AcceptTime or
+AssignmentStatus. You can also select on the basis of AssignmentStatus: the
+default is to select only Submitted assignments. The following example selects
+only Approved assignments:</p>
+<pre class="code">$r = new amt\results_request($hit_id);
+$r-&gt;set_sort('SubmitTime', 'Descending');
+$r-&gt;select_status('Approved');
+$results = $r-&gt;execute();</pre>
+
+<p>One potentially useful feature of <code>amt\results</code> is that it can
+dump a .csv file to disk. As a precaution against accidental mingling of data,
+the pathname provided has the HITId appended (or, if the pathname is a
+directory name, the filename will be HITId.csv). Here is how to use it:</p>
+<pre class="code">$results-&gt;write_csv('~/data/amt/dump');</pre>
+
+<p>The file csvwriter.php is part of this package. If you don't intend to use
+the csv feature, you can ignore this file. It is included only if the csv
+functions are called.</p>
+
+<h4 id="GetFileUploadURL"><a>11.1.1. Uploaded file answers</a></h4>
+
+<p>When evaluating the answers, there is one special consideration, namely, the
+situation where an answer is an uploaded file. Here, the corresponding answer
+field will contain not a string (as normal for an answer) but an array
+containing two elements: the size of the file, and a unique key. The size may
+be of interest, but the key is useless. I cannot understand its function. But
+it's there in case you want to print it out and frame it. The array is
+associative and might look like this: <code>array('size' =&gt; '12002',
+'filekey' =&gt; 'zzbb6q?')</code>. To retrieve this file, you have to call
+another API using <a
+href="db_amt_rest_api.html#%5Camt%5Cfile_upload_url_request"><code>amt\file_upload_url_request</code></a>.
+This is achieved as follows:</p>
+<pre class="code">$url = $assignment-&gt;get_upload_url($question_name);</pre>
+
+<p>If you don't have the <code>amt\assignment</code> handy, then you can do
+this:</p>
+<pre class="code">$url = amt\file_upload_url_request::execute($asst_id, $question_name);</pre>
+
+<p>You have then 60 seconds to perform the download using the URL.</p>
+
+<h3 id="RespondingAssignments">11.2. Responding to submitted assignments</h3>
+
+<p>Once you have received an <code>amt\assignment</code>, you can elect to do
+various things to it: approve or reject it, give the worker a bonus or even
+block him from ever touching your HITs again. Some of these things are
+conveniently handled by the <code>amt\assignment</code> class.</p>
+
+<h4 id="ApproveAssignment">11.2.1. Paying the worker</h4>
+
+<p>To approve all the assignments for a HIT, one method would be:</p>
+<pre class="code">$results = new amt\results($hit_id);
+foreach ($results as $asst) $asst-&gt;approve('Well done!');</pre>
+
+<p>The worker feedback parameter is optional here, but mandatory for
+<code>reject()</code>, as also for <code>grant_bonus()</code>.</p>
+
+<p>Note that if you wish to approve all the assignments, you can simply do
+this:</p>
+<pre class="code" id="approve_all">$results = new amt\results($hit_id);
+$results-&gt;approve_all(); // could have given feedback, but didn't</pre>
+
+<h4 id="GrantBonus">11.2.2. Paying the worker a bonus</h4>
+
+<p>This is as simple as:</p>
+<pre class="code">$assignment-&gt;grant_bonus(0.35, 'Great answer!');</pre>
+
+<p>If you decide to grant a bonus later, but don't have an
+<code>amt\assignment</code> handy, then provided you have the assignment and
+worker IDs on file you can grant the bonus like this:</p>
+<pre class="code">amt\grant_bonus_request::execute($worker_id, $asst_id, 0.35, 'Great answer!');</pre>
+
+<h4 id="RejectAssignment">11.2.3. Rejecting the answer</h4>
+
+<p>Given an <code>amt\assignment</code>, all you have to do is:</p>
+<pre class="code">$assignment-&gt;reject('You obviously weren\'t trying');</pre>
+
+<h4 id="BlockWorker">11.2.4. Blocking the worker</h4>
+
+<p>Given an <code>amt\assignment</code>, all you have to do is:</p>
+<pre class="code">$assignment-&gt;block_worker('Time-waster; does not even try to get it right');</pre>
+
+<p>If you don't have an <code>amt\assignment</code> handy, you will have to do
+this instead:</p>
+<pre class="code">amt\block_worker_request::execute($worker_id, 'Stupid answers!');</pre>
+
+<p>Once you have blocked a worker, he falls off your radar. The AMT API
+provides a way to reverse the process, but no way either to query blocked
+workers or to ascertain whether a worker has already been blocked or not.</p>
+
+<p><strong xml:lang="la">Nota Bene</strong>: the reason parameter is <a
+href="http://docs.amazonwebservices.com/AWSMechTurk/2008-08-02/AWSMturkAPI/ApiReference_BlockWorkerOperation.html">said
+in the Amazon documentation</a> to help you "keep track of your workers".
+However, I can find no API to extract this information from the AMT system.
+This necessary documentation is not shown to the worker, so it may be only for
+the benefit of the AMT admins.</p>
+
+<h4 id="NotifyWorkers">11.2.5. Sending workers a message</h4>
+
+<p>You can send a message to a selection of workers. You make the selection and
+provide the worker IDs as an array of strings. Assuming <var>$workers</var>
+below is such an array, and <var>$msg</var> is the message to send, this is how
+to do it:</p>
+<pre class="code">amt\notify_workers_request::execute($msg, $workers);</pre>
+
+<h4 id="UnblockWorker">11.2.6. Reversing a block</h4>
+
+<p>Given an <code>amt\assignment</code>, all you have to do is:</p>
+<pre class="code">$assignment-&gt;unblock_worker('oops! made a mistake');</pre>
+
+<p>If you don't have an <code>amt\assignment</code> handy, you will have to do
+this instead:</p>
+<pre class="code">amt\unblock_worker_request::execute($worker_id);</pre>
+
+<p>Note that you need not supply a reason for this operation: it defaults
+NULL.</p>
+
+<h3 id="L28982">11.3. Tinkering with HITs</h3>
+
+<p>While you are at the reviewing stage, you are not confined to dealing with
+the workers and their answers. You can also tinker with the HIT itself. In the
+first place, you might want to get rid of it, and you can do this at any time.
+You have to be careful how you do it, however.</p>
+
+<h4 id="DisableHIT">11.3.1. Early HIT deletion</h4>
+
+<p>If the HIT is <a href="#Assignable">assignable</a> or <a
+href="#Unassignab">unassignable</a>, i.e. not yet <a
+href="#Reviewable">reviewable</a>, this API will cause all currently accepted
+tasks to be automatically approved and paid; workers won't be able to accept
+the HIT after this is called. When all assignments are terminated, the HIT and
+all assignment data will be destroyed. This is rightly likened to a "stop
+button". However, once the HIT becomes reviewable, this API will not work.
+(Don't blame me: Amazon make the rules.) See <a href="#DisposeHIT">the next
+section</a> for what to do instead.</p>
+
+<p>The easiest way to stop the HIT is to create an <code>amt\minimal_hit</code>
+object and call its <code>disable()</code> method:</p>
+<pre class="code">$h = new amt\minimal_hit($hit_id);
+$h-&gt;disable();</pre>
+
+<p>This method will also work with <code>amt\hit_details</code>, if you have
+one to hand (it also implements <code><a
+href="db_amt_rest_api.html#%5Camt%5Chit_i">amt\hit_i</a></code>).</p>
+
+<p>If you want to save money at the expense of a little more processing, you
+might consider <a href="#ForceExpireHIT">expiring</a> the HIT instead.</p>
+
+<h4 id="DisposeHIT">11.3.2. Late HIT deletion</h4>
+
+<p>If the HIT has become <a href="#Reviewable">reviewable</a>, we switch
+tactics from abortion to euthanasia. First, all assignments must be approved or
+rejected. This may be swiftly accomplished using <a
+href="#approve_all"><code>amt\results::approve_all()</code></a>.</p>
+
+<p>Then we use the <code>dispose()</code> method of e.g.
+<code>amt\minimal_hit</code>:</p>
+<pre class="code">$h = new amt\minimal_hit($hit_id);
+$h-&gt;dispose();</pre>
+
+<h4 id="ForceExpireHIT">11.3.3. Expiring a HIT</h4>
+
+<p>If you want to stop workers accepting your HIT, the cheapest way is to force
+it to expire. Workers who have already accepted the HIT will, if they submit
+it, still need to be paid and you will need to approve or reject their efforts.
+Again, one can use the <code>expire()</code> method of e.g.
+<code>amt\minimal_hit</code>:</p>
+<pre class="code">$h = new amt\minimal_hit($hit_id);
+$h-&gt;expire();</pre>
+
+<h4 id="ChangeHITTypeOfHIT">11.3.4. Changing the HITType</h4>
+
+<p>After creating a HIT that needs workers to be qualified, you may find that
+there are no qualified workers available, and you are in a hurry for a result.
+Rather than destroying the HIT and creating another, you can switch horses in
+midstream, and throw the HIT open, by using this API. This can be done with any
+HIT class, e.g. <code>amt\minimal_hit</code>:</p>
+<pre class="code">$h = new amt\minimal_hit($hit_id);
+$h-&gt;change_hittype($new_hittype_id);</pre>
+
+<h4 id="ExtendHIT">11.3.5. Extending a HIT</h4>
+
+<p>A HIT may be extended in two ways: by extending its lifetime, and by
+increasing its maximum number of assignments. Both of these extensions involve
+the specification of an increment value. These functions are available only for
+<code>amt\hit</code> and <code>amt\hit_details</code>:</p>
+<pre class="code">$h = new amt\hit_details($hit_id);
+$h-&gt;extend_assignments(20); // increase max assignments by 20
+$h-&gt;extend_expiry(3600);    // add 1 hour to expiry time</pre>
+
+<h4 id="SetHITAsReviewing">11.3.6. Reviewing a HIT</h4>
+
+<p>While your application is reviewing a hit in the <a
+href="#Reviewable">reviewable</a> state, your application logic might trigger a
+separate process to begin doing the same. In order to prevent this from
+happening, you can try to set its status to <a href="#Reviewing">reviewing</a>.
+This should prevent your other processes finding the HIT when they <a
+href="#GetReviewableHITs">search for reviewable ones</a>. N.B. You should
+always <code>try</code> this operation, because if there is a race to review
+the same HIT, the second process to attempt the status switch should get an
+error from the AMT service and if so an <code>amt\Exception</code> will be
+thrown. Here is how to use this feature:</p>
+<pre class="code">$hits = new amt\reviewable_hitlist; // these will be amt\minimal_hit s
+                                    // any amt\hit_i will do
+foreach ($hits as $hit) {
+  try {
+    $hit-&gt;set_reviewing();          // might throw
+  }
+  catch (amtException $e) {
+    continue;                   // OK, someone else got here first, just skip
+  }
+  // process the HIT here...
+}</pre>
+
+<h2 id="L29092">12. Qualifications</h2>
+
+<p>The qualifications API concerns four entities:</p>
+<dl>
+  <dt>qualifications</dt>
+    <dd>Attributes of workers; they refer to qualification types.</dd>
+  <dt><a id="qualificationtype">qualification types</a></dt>
+    <dd>Qualification specifications: these may include a test with or without
+      answer key.</dd>
+  <dt>qualification requests</dt>
+    <dd>When a worker completes a qualification test, he sends you a
+      qualification request.</dd>
+  <dt><a id="qualification_requirement">qualification requirements</a></dt>
+    <dd>You specify these for your HIT types in order to restrict them to
+      qualified workers.</dd>
+</dl>
+
+<p>Qualifications and their types themselves fall into three categories:</p>
+<dl>
+  <dt>score qualifications</dt>
+    <dd>These have a numeric score attached. A typical use would be to count
+      number of rejected HITs, or a score in a qualification test.</dd>
+  <dt>locale qualification</dt>
+    <dd>Each worker has exactly one of these. It represents his location.
+      Locale qualifications have a country code as a string value.</dd>
+  <dt>predicate qualifications</dt>
+    <dd>These qualifications have no value: either they exist (have been
+      awarded) or they don't.</dd>
+</dl>
+
+<p>These three categories emerge clearly when we consider qualification
+requirements, which are specified differently for each.</p>
+
+<p>The workflow with qualifications can be rather lengthy:</p>
+<ol>
+  <li>Design the test if necessary, and any answer key if appropriate</li>
+  <li>Create the Qualification Type (this is where any test is specified to
+  AMT)</li>
+  <li>Enable the Qualification Type if necessary - then workers can take the
+    test</li>
+  <li>Poll to see if any workers have taken the test</li>
+  <li>Check the workers' answers and calculate a score</li>
+  <li>Award the qualification as a score to the worker</li>
+  <li>Create HITTypes with Qualification Requirements</li>
+</ol>
+
+<p>It is for this reason that the qualification-related API is such a sizable
+proportion of the whole, and has been separated off from the rest of the
+API.</p>
+
+<p>I am not offering any help with step 1: see the Amazon documents on <a
+href="http://docs.amazonwebservices.com/AWSMechTurk/2008-08-02/AWSMturkAPI/ApiReference_QuestionFormDataStructureArticle.html">QuestionForm</a>
+and <a
+href="http://docs.amazonwebservices.com/AWSMechTurk/2008-08-02/AWSMturkAPI/ApiReference_AnswerKeyDataStructureArticle.html">AnswerKey</a>.
+But please note this <strong>warning</strong>: <span class="warning">the AMT
+API allows file uploads in any QuestionForm. However, they should <strong>not
+</strong>be used in a qualification test, since the AMT API allows download of
+the file only in the context of a HIT assignment. If you use one in the PHP
+API, and an answer is submitted, a warning will be generated. <em>There is no
+documented way to download files uploaded during a qualification
+test.</em></span></p>
+
+<h3 id="CreateQualificationType">12.1. Qualification Type Setup</h3>
+
+<p>The relevant class is <a
+href="db_amt_rest_api.html#%5Camt%5Ccreate_qualification_request"><code>amt\create_qualification_request</code></a>.
+The constructor arguments define the common parameters:</p>
+<dl>
+  <dt>name</dt>
+    <dd>The name of the qualification</dd>
+  <dt>description</dt>
+    <dd>A description of not more than 2000 characters</dd>
+  <dt>active</dt>
+    <dd>TRUE if it is desired to make the qualification available immediately
+      (default TRUE)</dd>
+  <dt>keywords</dt>
+    <dd>Comma-separated string of search terms, not more than 1000 characters
+      (optional, but needs to be got right from the beginning: it cannot be
+      changed later)</dd>
+</dl>
+
+<p>Method calls set the remaining parameters: different sets will suit
+different types of qualification, depending on whether they are scored,
+automatically granted, etc.</p>
+
+<h4 id="L29212">12.1.1. Setting up with test</h4>
+
+<p>If your workers are to take a test, you must generate an XML file containing
+the QuestionForm according to the AMT specification and schema. To set up the
+qualification, this is what you do:</p>
+<pre class="code">$r = new amt\create_qualification_request($name, $desc, TRUE, $keywords);
+$r-&gt;set_test('path_to/my_test.xml', 60 * 20); // allow 20 minutes
+// specify other options here
+$qualtype_id = $r-&gt;execute();</pre>
+
+<p>If you want the AMT system to mark the answers automatically, then you
+should also generate a file with the answer key XML in it. Then you can do
+this:</p>
+<pre class="code">$r = new amt\create_qualification_request($name, $desc, TRUE, $keywords);
+$r-&gt;set_test('path_to/my_test.xml', 60 * 20); // allow 20 minutes
+$r-&gt;set_answers('path_to/my_answers.xml'); // AMT will do the marking
+// specify other options here
+$qualtype_id = $r-&gt;execute();</pre>
+
+<h4 id="L29222">12.1.2. Allowing retakes</h4>
+
+<p>If you want to allow retakes, you must specify a delay in seconds before a
+worker will be allowed to re-take the test. Here is how:</p>
+<pre class="code">$r = new amt\create_qualification_request($name, $desc, TRUE, $keywords);
+$r-&gt;set_test('path_to/my_test.xml', 60 * 20); // allow 20 minutes
+$r-&gt;set_answers('path_to/my_answers.xml'); // AMT will do the marking
+$r-&gt;set_retry_delay(7 * 24 * 60 * 60); // allow retry after a week
+$qualtype_id = $r-&gt;execute();</pre>
+
+<p>Unless you call <code>set_retry_delay()</code>, workers will not be allowed
+to re-take the test.</p>
+
+<h4 id="L29233">12.1.3. Auto-granted qualifications</h4>
+
+<p>As an alternative to setting a test, some types of qualification might be
+awarded to any worker that requests them. Here is how to set one of these
+up:</p>
+<pre class="code">$r = new amt\create_qualification_request($name, $desc, TRUE, $keywords);
+$r-&gt;set_auto(1); // this could be a 'parameter type' qualification
+$qualtype_id = $r-&gt;execute();</pre>
+
+<p>The integer parameter to <code>set_auto()</code> must be a positive integer;
+if zero, it disables auto-grant. This is legal: you may wish to award the
+qualification manually or according to some performance metric of your own
+devising.</p>
+
+<h3 id="UpdateQualificationType">12.2. Altering a QualificationType</h3>
+
+<p>This is much the same as creating a qualification type in the first place.
+The difference is that the constructor of the request object takes the
+qualification type ID as returned by the previous operation. All the option
+calls of <code>amt\create_qualification_request</code> are available, and also
+<code>set_desc()</code> to set a new description, and <code>set_active()</code>
+to enable/disable the qualification type. If you don't set a retry delay, then
+even if there was one before, there won't be one after the update. If you
+specify a new test or test duration but no answer key, the old answer key is
+dropped. If you don't specify either a test or an answer key, both are
+preserved. You cannot remove a test if the qualification type was created with
+one. Here, therefore, is an alteration that simply sets the qualification
+inactive (and disables retakes, so they will remain disabled if the
+qualification type is reactivated):</p>
+<pre class="code">$r = new amt\update_qualification_request($qualtype_id);
+$r-&gt;set_active(FALSE);
+$qualtype_id = $r-&gt;execute();</pre>
+
+<h3 id="GetQualificationRequests">12.3. Polling for qualification requests</h3>
+
+<p>This involves the use of the unfortnately-named <a
+href="db_amt_rest_api.html#%5Camt%5Cqualification_requests_request"><code>amt\qualification_requests_request</code></a>.
+This receives a <a href="#Paged">paged response</a>, so the usual page size and
+sort options are possible. You may sort either on SubmitTime or on
+QualificationTypeId. Note that the request object can either select a single
+qualification type (if specified to the constructor) or aggregate the requests
+of all your qualification types. The result of the request is a collection of
+instances of <a
+href="db_amt_rest_api.html#%5Camt%5Cqual_rq"><code>amt\qual_rq</code></a>. One
+of these includes the following public data:</p>
+<dl>
+  <dt>qual_id</dt>
+    <dd>The qualification type ID</dd>
+  <dt>worker_id</dt>
+    <dd>The ID of the worker who is requesting the qualification</dd>
+  <dt>rq_time</dt>
+    <dd>The (string) timestamp at which the request was made</dd>
+  <dt>answers</dt>
+    <dd>An array of answers, indexed by answer names, which can be one of</dd>
+    <dd><ol>
+        <li>A string, in the case of a free text or selection type answer</li>
+        <li>An <code>array('answer' =&gt; 'string', 'otherAnswer' =&gt;
+          'string')</code></li>
+        <li>An <code>array('size' =&gt; int_filesize, 'filekey' =&gt;
+          'stringkey')</code> - <strong>warning</strong> <span
+          class="warning">there is no documented method of retrieving this
+          file. A warning will be issued by <code>trigger_error</code> if one
+          of these is encountered</span>.</li>
+      </ol>
+    </dd>
+</dl>
+
+<p>To iterate over all the qualification requests for a specific qualification
+type, one might do something like this:</p>
+<pre class="code">$r = new amt\qualification_requests_request($qt_id); // just one qual. type
+$requests = $r-&gt;execute();
+foreach ($requests as $req) { /* do something useful here */ }</pre>
+
+<p>See the next section for sample code to poll for and score all outstanding
+qualification requests.</p>
+
+<h3 id="Scoring">12.4. Scoring qualification tests</h3>
+
+<p><code>amt\qual_rq</code> does contain a qualification request ID; but
+unusually for a member datum of a response object, it is private. (We can only
+hope and pray that the designer knew what he was doing.) The only way to grant
+or refuse a qualification, therefore, is to use the <code>grant()</code> and
+<code>reject()</code> member functions of the <code>amt\qual_rq</code>. Here is
+an example of its use:</p>
+<pre class="code">$r = new amt\qualification_requests_request; // cover all qualification types
+$requests = $r-&gt;execute(); // get the collection of amt\qual_rq
+foreach ($requests as $req) {
+  $score = my_score($req-&gt;qual_id, $req-&gt;answers); // mark the answers
+  if ($score &lt; 1)
+    $req-&gt;grant($score);
+  else
+    $req-&gt;reject("You scored only $score!");
+}</pre>
+
+<h3 id="L29340">12.5. Restricting access to HITs</h3>
+
+<p>It is possible to attach qualification requirements directly to a HIT. The
+PHP API does not currently support this.</p>
+
+<p>It is possible to attach qualification requirements to a HITType. This is
+supported through the <code>set_qual_requirements()</code> method of
+<code>amt\hittype_request</code>. This method expects as argument an array of
+<code>amt\qualification_requirement</code> instances. You cannot create these
+directly (the constructor is protected). Instead you must create an instance of
+one of the three subclasses corresponding to the three qualification
+categories. Once you have generated your array, you can register the HITType
+like this:</p>
+<pre class="code">$qual_requirements = create_my_qual_requirements(); // set them up somehow
+$r = new amt\hittype_request;
+$r-&gt;set_params(0.05, 'General Knowledge Test',
+ 'This test includes ten fairly simple questions to test your general knowledge.',
+ 80, 'general knowledge', 3600);
+$r-&gt;set_qual_requirements($qual_requirements);
+$hittype_id = $r-&gt;execute();</pre>
+
+<p>Creation of the elements of <var>$qual_requirements</var> is considered
+immediately below.</p>
+
+<h3 id="L29362">12.6. Creating qualification requirements</h3>
+
+<p>You cannot create qualification requirement objects directly: instead, you
+create instances of one of the three sub-classes. These correspond to the three
+categories of requirement, which are (in order of decreasing complexity):
+score, locale and predicate. Almost everything about a qualification
+requirement is specified in the constructor. The only option is whether you
+want to prevent unqualified workers from even seeing the HIT. You can achieve
+this by calling <code>set_required_for_preview()</code> on the requirement
+object before using it.</p>
+
+<h4 id="L29369">12.6.1. Creating a score qualification requirement</h4>
+
+<p>These are created as instances of <a
+href="db_amt_rest_api.html#%5Camt%5Cscore_requirement"><code>amt\score_requirement</code></a>.
+The constructor takes three arguments:</p>
+<dl>
+  <dt>qualtype_id</dt>
+    <dd>The ID of the qualification type we're talking about (i.e. the test
+      whose score we're interested in)</dd>
+  <dt>comparator</dt>
+    <dd>A comparison operator, which must be one of:</dd>
+    <dd><ul>
+        <li>GreaterThan</li>
+        <li>GreaterThanOrEqualTo</li>
+        <li>LessThan</li>
+        <li>LessThanOrEqualTo</li>
+        <li>EqualTo</li>
+        <li>NotEqualTo</li>
+      </ul>
+    </dd>
+  <dt>score</dt>
+    <dd>The (integer) score to compare to.</dd>
+</dl>
+
+<p>So, here we go:</p>
+<pre class="code">$req[0] = new amt\score_requirement($qualtype_id, 'GreaterThan', 29);
+$req[0]-&gt;set_required_for_preview();</pre>
+
+<p>For illustrative purposes, we have stored the requirement in an array and we
+have stipulated that the HITs will not be visible to workers who have not
+achieved a score of 30 or more. (I confess I was tempted to make the comparison
+operator 'NotEqualTo' above. It's rather like when you're standing at the edge
+of a cliff, the temptation to jump...)</p>
+
+<h4 id="L29421">12.6.2. Creating a locale qualification requirement</h4>
+
+<p>These are created as instances of <code>amt\locale_requirement</code>. The
+constructor takes two arguments:</p>
+<dl>
+  <dt>comparator</dt>
+    <dd>A comparison operator, which must be one of:</dd>
+    <dd><ul>
+        <li>EqualTo</li>
+        <li>NotEqualTo</li>
+      </ul>
+    </dd>
+  <dt>locale</dt>
+    <dd>A string, being an ISO 3166 country code, e.g. 'US' or 'FI'</dd>
+</dl>
+
+<p>So, to require French citizens for a HIT type, we could specify:</p>
+<pre class="code">$req[] = new amt\locale_requirement('EqualTo', 'FR');</pre>
+
+<h4 id="L29448">12.6.3. Creating a predicate qualification requirement</h4>
+
+<p>These are created as instances of <code>amt\predicate_requirement</code>.
+The constructor expects just the QualificationTypeId requirement:</p>
+<pre class="code">$req[] = new amt\predicate_requirement($qualtype_id2);</pre>
+
+<h3 id="L29454">12.7. Using qualification requirements</h3>
+
+<p>After using the above three examples, the <var>$req</var> array will be
+ready for use to apply three qualification requirements to a HIT Type as
+follows:</p>
+<pre class="code">$r = new amt\hittype_request;
+$r-&gt;set_params(0.05, 'General Knowledge Test',
+ 'This test includes ten fairly simple questions to test your general knowledge.',
+ 80, 'general knowledge', 3600);
+$r-&gt;set_qual_requirements($req); // add qualification requirements
+$hittype_id = $r-&gt;execute();</pre>
+
+<p>Note that you cannot modify a HIT Type, e.g. by adding qualification
+requirements to it. Consider the following example:</p>
+<pre class="code">$r = new amt\hittype_request;
+$r-&gt;set_params(0.05, 'General Knowledge Test',
+ 'This test includes ten fairly simple questions to test your general knowledge.',
+ 80, 'general knowledge', 3600);
+$hittype_id1 = $r-&gt;execute();
+$hittype_id2 = $r-&gt;execute(); // this will be the same as $hittype_id1
+$r-&gt;set_qual_requirements($req); // add qualification requirements
+$hittype_id3 = $r-&gt;execute(); // this will be different from $hittype_id1
+$hittype_id4 = $r-&gt;execute(); // this will be the same as $hittype_id3
+$req2 = array($req[2]); // this is a single amt\predicate_requirement
+try {
+  $r-&gt;set_qual_requirements($req2);
+  $hittype_id5 = $r-&gt;execute(); // we won't get here...
+}
+catch (BadMethodCallException $e) {
+  echo "You cannot call set_qual_requirements twice on the same object!\n";
+  echo 'Exception message: ' . $e-&gt;getMessage() . PHP_EOL;
+}</pre>
+
+<p>The above code will register just two HIT types. It will then display the
+exception message. If you wish to apply different sets of qualification
+requirements to otherwise similar HIT types, this is how:</p>
+<pre class="code">$r = new amt\hittype_request;
+$r-&gt;set_params(0.05, 'General Knowledge Test',
+ 'This test includes ten fairly simple questions to test your general knowledge.',
+ 80, 'general knowledge', 3600);
+$hittype_id1 = $r-&gt;execute(); // HIT Type with no qualification requirement
+$r2 = clone $r; // duplicate the request object
+$r-&gt;set_qual_requirements($req); // add qualification requirements
+$hittype_id2 = $r-&gt;execute(); // this will have 3 qualification requirements
+$req2 = array($req[2]); // this is a single amt\predicate_requirement
+$r2-&gt;sqt_qual_requirements($req2); // this is fine
+$hittype_id3 = $r-&gt;execute(); // this will have 1 qualification requirement</pre>
+
+<p>This last example creates 3 hit types.</p>
+
+<p>We have now covered all the essentials of using qualifications. There are,
+however, a number of additional facilities that I shall consider for the sake
+of completeness.</p>
+
+<h3 id="AssignQualification">12.8. Assigning a qualification directly</h3>
+
+<p>It is possible to assign a qualification to a worker directly, without their
+having to do anything to earn it. This is achieved as follows:</p>
+<pre class="code">$workers = find_my_good_workers(); // build an array of workers to assign to
+$qt_id = 'SAMPLESAMPLE'; // imagine this is a valid qualification type ID
+$r = new amt\assign_qualification_request($qt_id); // set up request object
+foreach ($workers as $worker_id) $r-&gt;execute($worker_id, TRUE);</pre>
+
+<p>The <code>execute()</code> method of <code><a
+href="db_amt_rest_api.html#%5Camt%5Cassign_qualification_request">amt\assign_qualification_request</a></code>
+can be called repeatedly with different parameters, these being Worker IDs and
+an optional boolean value that, if specified and true, prevents the worker
+being sent a notification.</p>
+
+<h3 id="RevokeQualification">12.9. Revoking a qualification</h3>
+
+<p>Yes, it is possible to undo a qualification assignment:</p>
+<pre class="code">amt\revoke_qualification_request::execute($qt_id, $worker_id, 'Assigned in error');</pre>
+
+<p>The worker will receive a notification if the third parameter is specified.
+It might be justifiable to omit it, however, if the qualification was assigned
+without a notification.</p>
+
+<h3 id="GetQualificationScore">12.10. Obtaining qualification scores</h3>
+
+<p>It is possible to query the scores of your workers (in the example, IDs in
+array <var>$workers</var>) for a given qualification type <var>$qt_id</var>,
+like this:</p>
+<pre class="code">$rq = new amt\qualification_score_request($qt_id);
+foreach ($workers as $w_id) $scores[$w_id] = $rq-&gt;execute($w_id);</pre>
+
+<h3 id="UpdateQualificationScore">12.11. Adjusting qualification score</h3>
+
+<p>Given the qualification type ID and the worker's ID, it is possible to
+adjust the qualification score like this:</p>
+<pre class="code">amt\update_qualification_score::execute($qualtype_id, $worker_id, 100);</pre>
+
+<h3 id="SearchQualificationTypes">12.12. Searching Qualification Types</h3>
+
+<p>AMT provides the facility to look up qualification types based on a search
+string. It is also possible to filter out qualification types that you did not
+create.</p>
+
+<p>The request object, <a
+href="db_amt_rest_api.html#%5Camt%5Csearch_qualtypes_request"><code>amt\search_qualtype_request</code></a>,
+obtains a <a href="#Paged">paged collection</a>, so it supports the usual
+paging options. The AMT documentation states that the sort order is Descending
+by default, which is unusual. The only valid sort key is Name. The constructor
+of the request object takes the following arguments:</p>
+<dl>
+  <dt>requestable</dt>
+    <dd>a boolean value: if FALSE, it will include non-requestable (system)
+      qualification types such as no. of HITs completed; if TRUE, it will
+      filter them out.</dd>
+  <dt>ours</dt>
+    <dd>a boolean value: if TRUE, it will search only the qualification types
+      you have created.</dd>
+  <dt>search</dt>
+    <dd>an optional search string to match against keywords (and, it is
+      implied, other fields - name perhaps?). It is possible to re-execute the
+      request with a different search string by calling the
+      <code>set_search()</code> method of the request object.</dd>
+</dl>
+
+<p>Here is how to get a collection of all your qualification types:</p>
+<pre class="code">$rq = new amt\search_qualtype_request(TRUE, TRUE);
+$qualtypes = $rq-&gt;execute();
+// now narrow the search
+$rq-&gt;set_search('general');
+$qualtypes2 = $rq-&gt;execute();</pre>
+
+<p>The collection returned by the <code>execute()</code> method can be treated
+as an array of instances of <code><a
+href="db_amt_rest_api.html#%5Camt%5Cqualtype">amt\qualtype</a></code>. These
+objects are accessible either as associative arrays or their properties may be
+accessed using object-style syntax, e.g. <code>$qt-&gt;Keywords</code> and
+<code>$qt['Keywords']</code> are equivalent.</p>
+
+<h3 id="GetQualificationType">12.13. Inspecting a Qualification Type</h3>
+
+<p>It is possible to inspect the details of a single qualification type if you
+know its ID.</p>
+<pre class="code">$qual = amt\get_qualification_request::execute($qual_id);</pre>
+
+<p>Here, the returned value <var>$qual</var> is our friend the <code><a
+href="db_amt_rest_api.html#%5Camt%5Cqualtype">amt\qualtype</a></code>.</p>
+
+<h3 id="GetQualificationsForQualificationType">12.14. Searching
+Qualifications</h3>
+
+<p>It is possible to look up all the qualifications of a specified type
+(provided, that is, you created the qualification type in the first place:
+otherwise, you will get an <code>amt\Exception</code> if you try).</p>
+
+<p>The request object, <a
+href="db_amt_rest_api.html#%5Camt%5Cqualifications_for_type_request"><code>amt\qualifications_for_type_request</code></a>,
+obtains a <a href="#Paged">paged collection</a>, so it supports the usual
+paging options. Sorting options are undefined. There are two arguments required
+to create a request:</p>
+<dl>
+  <dt>QualificationTypeId</dt>
+    <dd>The ID of the qualification type whose qualifications you're interested
+      in</dd>
+  <dt>Status</dt>
+    <dd>Granted or Revoked - defaults to Granted (need not be specified if
+    so)</dd>
+</dl>
+
+<p>Here is how to obtain a collection of qualifications:</p>
+<pre class="code">$r = new amt\qualifications_for_type_request($qualtype_id);
+$quals = $r-&gt;execute();</pre>
+
+<p>The collection returned by the <code>execute()</code> method can be treated
+as an array of instances of <a
+href="db_amt_rest_api.html#%5Camt%5Cqual"><code>amt\qual</code></a>. This is an
+object with public data members grant_time, status, value and worker_id.</p>
+
+<h3 id="GetHITsForQualificationType">12.15. Searching Qualified HITs</h3>
+
+<p>You can get a list of all your HITs that use the given qualification
+type.</p>
+
+<p>The request object, <a
+href="db_amt_rest_api.html#%5Camt%5Chits_for_qual_request"><code>amt\hits_for_qual_request</code></a>,
+obtains a <a href="#Paged">paged collection</a>, so it supports the usual
+paging options. Sorting options are undefined. The only constructor argument is
+the qualification type ID:</p>
+<pre class="code">$r = new amt\hits_for_qual_request($qualtype_id);
+$hits = $r-&gt;execute();</pre>
+
+<p>The collection returned by the <code>execute()</code> method can be treated
+as an array of instances of <code>amt\hit.</code></p>
+
+<h3 id="DisposeQualificationType">12.16. Deleting qualification types</h3>
+
+<p>If you delete a qualification type, you also delete any HIT types that use
+it. Just specify the ID of the qualification type as follows:</p>
+<pre class="code">amt\dispose_qualification_request::execute($qual_id);</pre>
+
+<h2 id="L29650">13. API Index</h2>
+
+<p>As stated at the outset, this document takes a task-oriented approach to
+documenting the API. However, it may be useful (particularly if you are
+familiar with the AMT API) to have an alphabetical list of AMT APIs and the PHP
+equivalents. The left-hand column gives the AMT APIs with a link to Amazon's
+documentation. The central column gives the PHP API classes. The right-hand
+column gives a link to the documentation in this document.</p>
+
+<table border="1" style="width: 100%" id="indexTable">
+  <col />
+  <col class="code" />
+  <col />
+  <thead>
+    <tr>
+      <th>AMT API</th>
+      <th>PHP class(es)</th>
+      <th>Covered here</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><a
+        href="http://docs.amazonwebservices.com/AWSMechTurk/2008-08-02/AWSMturkAPI/ApiReference_ApproveAssignmentOperation.html">ApproveAssignment</a></td>
+      <td><a
+      href="db_amt_rest_api.html#%5Camt%5Cassignment">amt\assignment</a></td>
+      <td><a href="#ApproveAssignment">Pay the worker</a></td>
+    </tr>
+    <tr>
+      <td><a
+        href="http://docs.amazonwebservices.com/AWSMechTurk/2008-08-02/AWSMturkAPI/ApiReference_AssignQualificationOperation.html">AssignQualification</a></td>
+      <td><a
+        href="db_amt_rest_api.html#%5Camt%5Cassign_qualification_request">amt\assign_qualification_request</a></td>
+      <td><a href="#AssignQualification">Assigning a qualification
+      directly</a></td>
+    </tr>
+    <tr>
+      <td><a
+        href="http://docs.amazonwebservices.com/AWSMechTurk/2008-08-02/AWSMturkAPI/ApiReference_BlockWorkerOperation.html">BlockWorker</a></td>
+      <td><a href="db_amt_rest_api.html#%5Camt%5Cassignment">amt\assignment</a>
+      </td>
+      <td><a href="#BlockWorker">Blocking the worker</a></td>
+    </tr>
+    <tr>
+      <td><a
+        href="http://docs.amazonwebservices.com/AWSMechTurk/2008-08-02/AWSMturkAPI/ApiReference_ChangeHITTypeOfHITOperation.html">ChangeHITTypeOfHIT</a></td>
+      <td><a href="db_amt_rest_api.html#%5Camt%5Chit_i">amt\hit_i</a> </td>
+      <td><a href="#ChangeHITTypeOfHIT">Changing the HITType</a></td>
+    </tr>
+    <tr>
+      <td><a
+        href="http://docs.amazonwebservices.com/AWSMechTurk/2008-08-02/AWSMturkAPI/ApiReference_CreateHITOperation.html">CreateHIT</a></td>
+      <td><a
+        href="db_amt_rest_api.html#%5Camt%5Cexternal_hit_request">amt\external_hit_request</a></td>
+      <td><a href="#CreateHIT">Create external HIT</a></td>
+    </tr>
+    <tr>
+      <td><a
+        href="http://docs.amazonwebservices.com/AWSMechTurk/2008-08-02/AWSMturkAPI/ApiReference_CreateQualificationTypeOperation.html">CreateQualificationType</a></td>
+      <td><a
+        href="db_amt_rest_api.html#%5Camt%5Ccreate_qualification_request">amt\create_qualification_request</a></td>
+      <td><a href="#CreateQualificationType">Qualification Type Setup</a></td>
+    </tr>
+    <tr>
+      <td><a
+        href="http://docs.amazonwebservices.com/AWSMechTurk/2008-08-02/AWSMturkAPI/ApiReference_DisableHITOperation.html">DisableHIT</a></td>
+      <td><a href="db_amt_rest_api.html#%5Camt%5Chit_i">amt\hit_i</a></td>
+      <td><a href="#DisableHIT">Early HIT deletion</a></td>
+    </tr>
+    <tr>
+      <td><a
+        href="http://docs.amazonwebservices.com/AWSMechTurk/2008-08-02/AWSMturkAPI/ApiReference_DisposeHITOperation.html">DisposeHIT</a></td>
+      <td><a href="db_amt_rest_api.html#%5Camt%5Chit_i">amt\hit_i</a> </td>
+      <td><a href="#DisposeHIT">Late HIT deletion</a></td>
+    </tr>
+    <tr>
+      <td><a
+        href="http://docs.amazonwebservices.com/AWSMechTurk/2008-08-02/AWSMturkAPI/ApiReference_DisposeQualificationTypeOperation.html">DisposeQualificationType</a></td>
+      <td><a
+        href="db_amt_rest_api.html#%5Camt%5Cdispose_qualification_request">amt\dispose_qualification_request</a></td>
+      <td><a href="#DisposeQualificationType">Deleting qualification
+      types</a></td>
+    </tr>
+    <tr>
+      <td><a
+        href="http://docs.amazonwebservices.com/AWSMechTurk/2008-08-02/AWSMturkAPI/ApiReference_ExtendHITOperation.html">ExtendHIT</a></td>
+      <td><a href="db_amt_rest_api.html#%5Camt%5Chit">amt\hit<br />
+        <a href="db_amt_rest_api.html#%5Camt%5Chit_details">amt\hit_details</a>
+        </a> </td>
+      <td><a href="#ExtendHIT">Extending a HIT</a></td>
+    </tr>
+    <tr>
+      <td><a
+        href="http://docs.amazonwebservices.com/AWSMechTurk/2008-08-02/AWSMturkAPI/ApiReference_ForceExpireHITOperation.html">ForceExpireHIT</a></td>
+      <td><a href="db_amt_rest_api.html#%5Camt%5Chit_i">amt\hit_i</a> </td>
+      <td><a href="#ForceExpireHIT">Expiring a HIT</a></td>
+    </tr>
+    <tr>
+      <td><a
+        href="http://docs.amazonwebservices.com/AWSMechTurk/2008-08-02/AWSMturkAPI/ApiReference_GetAccountBalanceOperation.html">GetAccountBalance</a></td>
+      <td><a
+        href="db_amt_rest_api.html#%5Camt%5Cbalance_request">amt\balance_request</a></td>
+      <td><a href="#GetAccountBalance">Account balance</a></td>
+    </tr>
+    <tr>
+      <td><a
+        href="http://docs.amazonwebservices.com/AWSMechTurk/2008-08-02/AWSMturkAPI/ApiReference_GetAssignmentsForHITOperation.html">GetAssignmentsForHIT</a></td>
+      <td><a href="db_amt_rest_api.html#%5Camt%5Cresults">amt\results</a><br />
+        <a
+        href="db_amt_rest_api.html#%5Camt%5Cassignment">amt\assignment</a><br />
+        <a
+        href="db_amt_rest_api.html#%5Camt%5Cresults_request">amt\results_request</a>
+      </td>
+      <td><a href="#GetAssignmentsForHIT">Getting workers' answers</a></td>
+    </tr>
+    <tr>
+      <td><a
+        href="http://docs.amazonwebservices.com/AWSMechTurk/2008-08-02/AWSMturkAPI/ApiReference_GetBonusPaymentsOperation.html">GetBonusPayments</a></td>
+      <td><a href="db_amt_rest_api.html#%5Camt%5Cbonus">amt\bonus</a><br />
+        <a
+        href="db_amt_rest_api.html#%5Camt%5Cget_bonus_request">amt\get_bonus_request</a></td>
+      <td><a href="#GetBonusPayments">Bonus Payments</a></td>
+    </tr>
+    <tr>
+      <td><a
+        href="http://docs.amazonwebservices.com/AWSMechTurk/2008-08-02/AWSMturkAPI/ApiReference_GetFileUploadURLOperation.html">GetFileUploadURL</a></td>
+      <td><a
+        href="db_amt_rest_api.html#%5Camt%5Cfile_upload_url_request">amt\file_upload_url_request</a>
+      </td>
+      <td><a href="#GetFileUploadURL">Uploaded file answers</a></td>
+    </tr>
+    <tr>
+      <td><a
+        href="http://docs.amazonwebservices.com/AWSMechTurk/2008-08-02/AWSMturkAPI/ApiReference_GetHITOperation.html">GetHIT</a></td>
+      <td><a
+        href="db_amt_rest_api.html#%5Camt%5Cget_hit_request">amt\get_hit_request</a><br
+        />
+        <a
+        href="db_amt_rest_api.html#%5Camt%5Chit_details">amt\hit_details</a><br
+        />
+        <a href="db_amt_rest_api.html#%5Camt%5Chit">amt\hit</a> </td>
+      <td><a href="#GetHIT">Getting HIT details</a></td>
+    </tr>
+    <tr>
+      <td><a
+        href="http://docs.amazonwebservices.com/AWSMechTurk/2008-08-02/AWSMturkAPI/ApiReference_GetHITsForQualificationTypeOperation.html">GetHITsForQualificationType</a></td>
+      <td><a href="db_amt_rest_api.html#%5Camt%5Chit">amt\hit</a><br />
+        <a
+        href="db_amt_rest_api.html#%5Camt%5Chits_for_qual_request">amt\hits_for_qual_request</a></td>
+      <td><a href="#GetHITsForQualificationType">Searching qualified
+      HITs</a></td>
+    </tr>
+    <tr>
+      <td><a
+        href="http://docs.amazonwebservices.com/AWSMechTurk/2008-08-02/AWSMturkAPI/ApiReference_GetQualificationsForQualificationTypeOperation.html">GetQualificationsForQualificationType</a></td>
+      <td><a href="db_amt_rest_api.html#%5Camt%5Cqual">amt\qual</a><br />
+        <a
+        href="db_amt_rest_api.html#%5Camt%5Cqualifications_for_type_request">amt\qualifications_for_type_request</a></td>
+      <td><a href="#GetQualificationsForQualificationType">Searching
+        qualifications</a></td>
+    </tr>
+    <tr>
+      <td><a
+        href="http://docs.amazonwebservices.com/AWSMechTurk/2008-08-02/AWSMturkAPI/ApiReference_GetQualificationRequestsOperation.html">GetQualificationRequests</a></td>
+      <td><a
+        href="db_amt_rest_api.html#%5Camt%5Cqualification_requests_request">amt\qualification_requests_request</a><br
+        />
+        <a href="db_amt_rest_api.html#%5Camt%5Cqual_rq">amt\qual_rq</a></td>
+      <td><a href="#GetQualificationRequests">Polling for
+        QualificationRequests</a></td>
+    </tr>
+    <tr>
+      <td><a
+        href="http://docs.amazonwebservices.com/AWSMechTurk/2008-08-02/AWSMturkAPI/ApiReference_GetQualificationScoreOperation.html">GetQualificationScore</a></td>
+      <td><a
+        href="db_amt_rest_api.html#%5Camt%5Cqualification_score_request">amt\qualification_score_request</a></td>
+      <td><a href="#GetQualificationScore">Obtaining qualification
+      scores</a></td>
+    </tr>
+    <tr>
+      <td><a
+        href="http://docs.amazonwebservices.com/AWSMechTurk/2008-08-02/AWSMturkAPI/ApiReference_GetQualificationTypeOperation.html">GetQualificationType</a></td>
+      <td><a
+        href="db_amt_rest_api.html#%5Camt%5Cget_qualification_request">amt\get_qualification_request</a><br
+        />
+        <a href="db_amt_rest_api.html#%5Camt%5Cqualtype">amt\qualtype</a></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td><a
+        href="http://docs.amazonwebservices.com/AWSMechTurk/2008-08-02/AWSMturkAPI/ApiReference_GetRequesterStatisticOperation.html">GetRequesterStatistic</a></td>
+      <td><a
+        href="db_amt_rest_api.html#%5Camt%5Cstats_request">amt\stats_request</a>
+      </td>
+      <td><a href="#GetRequesterStatistic">Retrieving Statistics</a></td>
+    </tr>
+    <tr>
+      <td><a
+        href="http://docs.amazonwebservices.com/AWSMechTurk/2008-08-02/AWSMturkAPI/ApiReference_GetReviewableHITsOperation.html">GetReviewableHITs</a></td>
+      <td><a
+        href="db_amt_rest_api.html#%5Camt%5Creviewable_hits_request">amt\reviewable_hits_request</a>
+        <br />
+        <a
+        href="db_amt_rest_api.html#%5Camt%5Creviewable_hitlist">amt\reviewable_hitlist</a>
+      </td>
+      <td><a href="#GetReviewableHITs">Search reviewable HITs</a></td>
+    </tr>
+    <tr>
+      <td><a
+        href="http://docs.amazonwebservices.com/AWSMechTurk/2008-08-02/AWSMturkAPI/ApiReference_GrantBonusOperation.html">GrantBonus</a></td>
+      <td><a href="db_amt_rest_api.html#%5Camt%5Cassignment">amt\assignment</a>
+      </td>
+      <td><a href="#GrantBonus">Paying the worker a bonus</a></td>
+    </tr>
+    <tr>
+      <td><a
+        href="http://docs.amazonwebservices.com/AWSMechTurk/2008-08-02/AWSMturkAPI/ApiReference_GrantQualificationOperation.html">GrantQualification</a></td>
+      <td><a href="db_amt_rest_api.html#%5Camt%5Cqual_rq">amt\qual_rq</a> </td>
+      <td><a href="#Scoring">Scoring Qualification Tests</a> </td>
+    </tr>
+    <tr>
+      <td><a
+        href="http://docs.amazonwebservices.com/AWSMechTurk/2008-08-02/AWSMturkAPI/ApiReference_HelpOperation.html">Help</a></td>
+      <td>N/A</td>
+      <td>Not implemented</td>
+    </tr>
+    <tr>
+      <td><a
+        href="http://docs.amazonwebservices.com/AWSMechTurk/2008-08-02/AWSMturkAPI/ApiReference_NotifyWorkersOperation.html">NotifyWorkers</a></td>
+      <td><a
+        href="db_amt_rest_api.html#%5Camt%5Cnotify_workers_request">amt\notify_workers_request</a></td>
+      <td><a href="#NotifyWorkers">Sending messages to workers</a></td>
+    </tr>
+    <tr>
+      <td><a
+        href="http://docs.amazonwebservices.com/AWSMechTurk/2008-08-02/AWSMturkAPI/ApiReference_RegisterHITTypeOperation.html">RegisterHITType</a></td>
+      <td><a
+        href="db_amt_rest_api.html#%5Camt%5Chittype_request">amt\hittype_request</a></td>
+      <td><a href="#RegisterHITType">Create a HITType</a></td>
+    </tr>
+    <tr>
+      <td><a
+        href="http://docs.amazonwebservices.com/AWSMechTurk/2008-08-02/AWSMturkAPI/ApiReference_RejectAssignmentOperation.html">RejectAssignment</a></td>
+      <td><a href="db_amt_rest_api.html#%5Camt%5Cassignment">amt\assignment</a>
+      </td>
+      <td><a href="#RejectAssignment">Rejecting the answer</a></td>
+    </tr>
+    <tr>
+      <td><a
+        href="http://docs.amazonwebservices.com/AWSMechTurk/2008-08-02/AWSMturkAPI/ApiReference_RejectQualificationRequestOperation.html">RejectQualificationRequest</a></td>
+      <td><a href="db_amt_rest_api.html#%5Camt%5Cqual_rq">amt\qual_rq</a> </td>
+      <td><a href="#Scoring">Scoring Qualification Tests</a></td>
+    </tr>
+    <tr>
+      <td><a
+        href="http://docs.amazonwebservices.com/AWSMechTurk/2008-08-02/AWSMturkAPI/ApiReference_RevokeQualificationOperation.html">RevokeQualification</a></td>
+      <td><a
+        href="db_amt_rest_api.html#%5Camt%5Crevoke_qualification_request">amt\revoke_qualification_request</a></td>
+      <td><a href="#RevokeQualification">Revoking Qualifications</a></td>
+    </tr>
+    <tr>
+      <td><a
+        href="http://docs.amazonwebservices.com/AWSMechTurk/2008-08-02/AWSMturkAPI/ApiReference_SearchHITsOperation.html">SearchHITs</a></td>
+      <td><a
+        href="db_amt_rest_api.html#%5Camt%5Csearch_hits_request">amt\search_hits_request</a><br
+        />
+        <a href="db_amt_rest_api.html#%5Camt%5Chitlist">amt\hitlist</a> </td>
+      <td><a href="#SearchHITs">Search all HITs</a></td>
+    </tr>
+    <tr>
+      <td><a
+        href="http://docs.amazonwebservices.com/AWSMechTurk/2008-08-02/AWSMturkAPI/ApiReference_SearchQualificationTypesOperation.html">SearchQualificationTypes</a></td>
+      <td><a href="db_amt_rest_api.html#%5Camt%5Cqualtype">amt\qualtype</a><br
+        />
+        <a
+        href="db_amt_rest_api.html#%5Camt%5Csearch_qualtypes_request">amt\search_qualtypes_request</a></td>
+      <td><a href="#SearchQualificationTypes">Searching qualification
+      types</a></td>
+    </tr>
+    <tr>
+      <td><a
+        href="http://docs.amazonwebservices.com/AWSMechTurk/2008-08-02/AWSMturkAPI/ApiReference_SendTestEventNotificationOperation.html">SendTestEventNotification</a></td>
+      <td><a
+        href="db_amt_rest_api.html#%5Camt%5Ctest_notification_request">amt\test_notification_request</a></td>
+      <td><a href="#TestEventNotification">Testing Notifications</a></td>
+    </tr>
+    <tr>
+      <td><a
+        href="http://docs.amazonwebservices.com/AWSMechTurk/2008-08-02/AWSMturkAPI/ApiReference_SetHITAsReviewingOperation.html">SetHITAsReviewing</a></td>
+      <td><a href="db_amt_rest_api.html#%5Camt%5Chit_i">amt\hit_i</a> </td>
+      <td><a href="#SetHITAsReviewing">Reviewing a HIT</a></td>
+    </tr>
+    <tr>
+      <td><a
+        href="http://docs.amazonwebservices.com/AWSMechTurk/2008-08-02/AWSMturkAPI/ApiReference_SetHITTypeNotificationOperation.html">SetHITTypeNotification</a></td>
+      <td><a
+        href="db_amt_rest_api.html#%5Camt%5Chittype_notification_request">amt\hittype_notification_request</a></td>
+      <td><a href="#SetHITTypeNotification">Setting up Notifications</a></td>
+    </tr>
+    <tr>
+      <td><a
+        href="http://docs.amazonwebservices.com/AWSMechTurk/2008-08-02/AWSMturkAPI/ApiReference_UnblockWorkerOperation.html">UnblockWorker</a></td>
+      <td><a href="db_amt_rest_api.html#%5Camt%5Cassignment">amt\assignment</a>
+      </td>
+      <td><a href="#UnblockWorker">Reversing a block</a></td>
+    </tr>
+    <tr>
+      <td><a
+        href="http://docs.amazonwebservices.com/AWSMechTurk/2008-08-02/AWSMturkAPI/ApiReference_UpdateQualificationScoreOperation.html">UpdateQualificationScore</a></td>
+      <td><a
+        href="db_amt_rest_api.html#%5Camt%5Cupdate_qualification_score">amt\update_qualification_score</a></td>
+      <td><a href="#UpdateQualificationScore">Adjusting Qualification
+      Score</a></td>
+    </tr>
+    <tr>
+      <td><a
+        href="http://docs.amazonwebservices.com/AWSMechTurk/2008-08-02/AWSMturkAPI/ApiReference_UpdateQualificationTypeOperation.html">UpdateQualificationType</a></td>
+      <td><a
+        href="db_amt_rest_api.html#%5Camt%5Cupdate_qualification_request">amt\update_qualification_request</a></td>
+      <td><a href="#UpdateQualificationType">Altering a
+      QualificationType</a></td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="L30260">14. Not Implemented</h2>
+
+<table border="1" style="width: 100%">
+  <col />
+  <col />
+  <thead>
+    <tr>
+      <th>Feature</th>
+      <th>Excuse</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>HITs without a HITType</td>
+      <td>Amazon will create a HIT type from the property values anyway, so it
+        is neater just to register the HIT type and save time thereafter.</td>
+    </tr>
+    <tr>
+      <td>Internal HITs</td>
+      <td>It is easier to specify and test external HITs, and the HITType
+        creation process is easier too.</td>
+    </tr>
+    <tr>
+      <td>requester feedback in GetAssignmentsForHIT</td>
+      <td>It should be possible to obtain this by specifying a response group
+        of AssignmentFeedback to the requester object. However, the default
+        response group is not documented and I don't know whether specifying
+        this one will prevent all the other information from coming
+      through.</td>
+    </tr>
+    <tr>
+      <td>Help</td>
+      <td>I was going to skip this one, then I thought O Heck, why not just do
+        it too, it might be fun to play with. So I wrote a full implementation
+        of a Help request object and found that AMT doesn't actually provide
+        any help at all, it just refers you to an URL. So I have removed my
+        implementation: it is a waste of space, as is the corresponding AMT
+      API.</td>
+    </tr>
+  </tbody>
+</table>
+</body>
+</html>

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+      "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+  <title>Installing the AMT REST API classes</title>
+  <meta name="generator" content="Amaya, see http://www.w3.org/Amaya/" />
+</head>
+
+<body>
+<h1>Amazon Mechanical Turk PHP REST API: Installation</h1>
+
+<p>Author: CPKS</p>
+
+<p>Date: <!--$date=-->2011-10-28</p>
+
+<h2>Files in this package</h2>
+<dl>
+  <dt>amt_rest_api.php</dt>
+    <dd>Main API include file</dd>
+  <dt>amt_keys.php</dt>
+    <dd>API access keys (included by amt_rest_api.php)</dd>
+  <dt>amt_notification.php</dt>
+    <dd>Classes supporting the AMT notification API</dd>
+  <dt>amt_qual.php</dt>
+    <dd>Classes supporting the AMT qualifications API</dd>
+  <dt>hittype.conf</dt>
+    <dd>Sample hit type configuration file</dd>
+  <dt>amt_config.php</dt>
+    <dd>Configuration file reading classes</dd>
+  <dt>csvwriter.php</dt>
+    <dd>CSV output class</dd>
+  <dt>amt_notify_test.php</dt>
+    <dd>Notification reception test</dd>
+  <dt>docblox.dist.xml</dt>
+    <dd>Documentation generation configuration file</dd>
+</dl>
+
+<h2>Installation</h2>
+<ul>
+  <li>Edit amt_keys.php to specify your organization's access keys for the AMT
+    service.</li>
+  <li>Copy amt_rest_api.php and amt_keys.php to your include directory.</li>
+  <li>If you intend to use the notification API, copy amt_notification.php to
+    your include directory.</li>
+  <li>If you intend to use qualifications, copy amt_qual.php to your include
+    directory.</li>
+  <li>If you intend to use configuration files to define HIT types, copy
+    amt_config.php to your include directory.</li>
+  <li>If you intend to dump results in CSV format, copy csvwriter.php to your
+    include directory.</li>
+</ul>
+
+<h2>Documentation</h2>
+
+<p>The class documentation is best generated using the <a
+href="http://www.docblox-project.org/">docblox</a> system. Under Linux, the
+recommended procedure is to do the following from the command-line:</p>
+
+<p><samp>$ cd ~/path_to_amt_install_dir</samp></p>
+
+<p><samp>$ sudo pear install docblox</samp></p>
+
+<p><samp>$ docblox run</samp></p>
+
+<p>This will generate the package documentation in the doc subdirectory. There
+are bidirectional links to doc/<a href="manual.html">manual.html</a>.</p>
+</body>
+</html>
