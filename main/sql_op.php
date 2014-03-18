@@ -75,4 +75,20 @@
 		// call hit creation for job 1
 		return 4;
 	}
+	function trigger(){
+		global $dbc, $db_connected;
+		if (!$db_connected) return 1;
+		try {
+			$sql = "INSERT INTO trig (tgval) VALUES ('hi')";
+			$q = $dbc->prepare($sql);
+			$q->execute();
+			print 'inserted';
+			return 0;
+		} catch(PDOException $e) {
+		    echo 'ERROR: ' . $e->getMessage();
+		    error_log('ERROR: ' . $e->getMessage());
+	        return 3;
+		}
+		return 1;
+	}
 ?>

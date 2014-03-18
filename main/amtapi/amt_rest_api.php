@@ -510,6 +510,128 @@ class hittype_request extends compound_request {
   }
 }
 
+// Edited by Mitchell Taylor
+
+
+
+class custom_hit_request extends compound_request {
+  
+  public function __construct($title, $description, $question=NULL, $reward, $assignmentdurationinseconds,
+                              $lifetimeinseconds, $keywords=NULL, $maxassignments=NULL, $autoapprovaldelayinseconds=NULL,
+                              $qualificationrequirement=NULL, $assignmentreviewpolicy=NULL, $hitreviewpolicy=NULL, 
+                              $requesterannotation=NULL, $uniquerequesttoken=NULL, $hitlayoutid=NULL, $hitlayoutparameter=NULL) {
+    parent::__construct('CreateHIT', array(
+      'Title' => TRUE,
+      'Description' => TRUE,
+      'Question' => FALSE,
+      'HITLayoutId' => FALSE,
+      'HITLayoutParameter' => FALSE,
+      'Reward' => TRUE,
+      'AssignmentDurationInSeconds' => TRUE,
+      'LifetimeInSeconds' => TRUE,
+      'Keywords' => FALSE,
+      'MaxAssignments' => FALSE,
+      'AutoApprovalDelayInSeconds' => FALSE,
+      'QualificationRequirement' => FALSE,
+      'AssignmentReviewPolicy' => FALSE,
+      'HITReviewPolicy' => FALSE,
+      'RequesterAnnotation' => FALSE,
+      'UniqueRequestToken' => FALSE
+    ));
+
+    $this->add_param('Title', $title);
+    $this->add_param('Description', $description);
+    $this->add_param('Reward', $reward);
+    $this->add_param('AssignmentDurationInSeconds', $assignmentdurationinseconds);
+    $this->add_param('LifetimeInSeconds', $lifetimeinseconds);
+
+    if ($question)
+      $this->add_param('Question', $question);
+    if ($hitlayoutid)
+      $this->add_param('HITLayoutId', $hitlayoutid);
+    if ($hitlayoutparameter)
+      $this->add_param('HITLayoutParameter', $hitlayoutparameter);
+    if ($keywords)
+      $this->add_param('Keywords', $keywords);
+    if ($maxassignments)
+      $this->add_param('MaxAssignments', $maxassignments);
+    if ($autoapprovaldelayinseconds)
+      $this->add_param('AutoApprovalDelayInSeconds', $autoapprovaldelayinseconds);
+    if ($qualificationrequirement)
+      $this->add_param('QualificationRequirement', $qualificationrequirement);
+    if ($assignmentreviewpolicy)
+      $this->add_param('AssignmentReviewPolicy', $assignmentreviewpolicy);
+    if ($hitreviewpolicy)
+      $this->add_param('HITReviewPolicy', $hitreviewpolicy);
+    if ($requesterannotation)
+      $this->add_param('RequesterAnnotation', $requesterannotation);
+    if ($uniquerequesttoken)
+      $this->add_param('UniqueRequestToken', $uniquerequesttoken);    
+  }
+
+  public function check_params() {
+    //disabled?
+  }
+
+  public function execute() {
+    $r = response::acquire_from($this, 'HIT');
+    return new hit($r->HIT);
+  }
+}
+
+
+
+class custom_ext_hit_request extends compound_request {
+  const MAX_ANNOTATION_LENGTH = 4096;
+  const MIN_LIFETIME = 30;
+  const MAX_LIFETIME = 31536000;
+
+  public function __construct($hittype, $annotation=NULL, $lifetime, $assignments, $question=NULL, $frameheight = 640) {
+    parent::__construct('CreateHIT', array(
+      'HITTypeId' => TRUE,
+      'Question' => TRUE,
+      'LifetimeInSeconds' => TRUE,
+      'MaxAssignments' => FALSE,
+      'RequesterAnnotation' => FALSE
+    ));
+    $this->add_param('HITTypeId', $hittype);
+    if (\strlen($annotation) > self::MAX_ANNOTATION_LENGTH)
+      throw new \LengthException('Annotation exceeds ' . self::MAX_ANNOTATION_LENGTH . ' characters');
+    if ($annotation)
+      $this->add_param('RequesterAnnotation', $annotation);
+    if ($lifetime < self::MIN_LIFETIME || $lifetime > self::MAX_LIFETIME)
+      throw new \OutOfRangeException('Lifetime out of bounds');
+    $this->add_param('LifetimeInSeconds', $lifetime);
+    if (!is_int($assignments) || $assignments < 1)
+      throw new \InvalidArgumentException('Assignments must be integer > 0');
+    if ($assignments > 1)
+      $this->add_param('MaxAssignments', $assignments);
+    $this->add_param('Question', $question);
+  }
+  /**
+   * Throw exception if params incorrect
+   * @throws LogicException
+   */
+  public function check_params() {
+    $this->length_check('Question', 131072);
+    $this->length_check('RequesterAnnotation', self::MAX_ANNOTATION_LENGTH);
+    $this->range_check('LifetimeInSeconds', self::MIN_LIFETIME, self::MAX_LIFETIME);
+  }
+  /**
+   * Execute the query and return the HIT
+   * @throws amtException
+   * @return amt\hit
+   */
+  public function execute() {
+    $r = response::acquire_from($this, 'HIT');
+    return new hit($r->HIT);
+  }
+}
+
+
+// end of edit
+
+
 /**
  * CreateHIT - for external HIT with HITType
  *
@@ -545,6 +667,8 @@ class external_hit_request extends compound_request {
    * @param int $frameheight pixel height of the embedded external HIT window
    * @throws InvalidArgumentException|LengthException|OutOfRangeException
    */
+
+
   public function __construct($hittype, $url, $annotation, $lifetime, $assignments, $frameheight = 640) {
     parent::__construct('CreateHIT', array(
       'HITTypeId' => TRUE,
@@ -1428,13 +1552,13 @@ final class response extends \SimpleXMLElement {
       $err = $this->Errors;
       if ($err->count() === 1) {
         $err = $err->Error;
-        throw new amtException("$err->Code: $err->Message", $this);
+        throw new Exception("$err->Code: $err->Message", $this);
       }
       else {
         $emsg = '';
         foreach ($err->children() as $error)
           $emsg .= "Error $error->Code: $error->Message\n";
-        throw new amtException($emsg, $this);
+        throw new Exception($emsg, $this);
       }
     }
   }
@@ -2417,3 +2541,4 @@ class bonus_payments extends pager {
 
 // initialize the request class
 require 'amt_keys.php';
+// require 'amtapi/amt_custom_request.php';

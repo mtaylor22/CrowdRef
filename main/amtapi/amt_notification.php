@@ -180,7 +180,7 @@ class notification {
  * @subpackage notifications
  * @api
 */
-class notification_response implements \Countable, IteratorAggregate {
+class notification_response implements \Countable, \IteratorAggregate {
   /**
    * the events notified
    * @var amt\notification[]
