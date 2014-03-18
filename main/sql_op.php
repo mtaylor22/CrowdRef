@@ -75,6 +75,31 @@
 		// call hit creation for job 1
 		return 4;
 	}
+
+	function add_reference_result($title, $author, $website_title, $publisher, $date_published, $date_accessed, $medium, $ref){
+		global $dbc, $db_connected;
+		if (!$db_connected) return 1;
+		try {
+			$sql = "INSERT INTO Refdata (title, author, website_title, publisher, date_published, date_accessed, medium, ref) VALUES (:title, :author, :website_title, :publisher, :date_published, :date_accessed, :medium, :ref)";
+			$q = $dbc->prepare($sql);
+			$q->bindParam(':title', $title);
+			$q->bindParam(':author', $author);
+			$q->bindParam(':website_title', $website_title);
+			$q->bindParam(':publisher', $publisher);
+			$q->bindParam(':date_published', $date_published);
+			$q->bindParam(':date_accessed', $date_accessed);
+			$q->bindParam(':medium', $medium);
+			$q->bindParam(':ref', $ref);
+			$q->execute();
+			return 0;
+		} catch(PDOException $e) {
+		    echo 'ERROR: ' . $e->getMessage();
+		    error_log('ERROR: ' . $e->getMessage());
+	        return 3;
+		}
+		// call hit creation for job 1
+		return 4;
+	}
 	function trigger(){
 		global $dbc, $db_connected;
 		if (!$db_connected) return 1;

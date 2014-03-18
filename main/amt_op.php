@@ -75,7 +75,7 @@ function create_custom_hit($hit_type, $reference_url){
 		  <p>Who published the webpage? <input name='publisher' id='publisher' type='text' /></p>
 		  <p>When was th webpage published? <input name='date_published' id='date_published' type='text' /></p>
 		  <p>What is the date you accessed this? <input name='date_accessed' id='date_accessed' type='text' /></p>
-		  <p>What was the medium of the webpage? <input name='web' id='web' type='text' value='web'/></p>
+		  <p>What was the medium of the webpage? <input name='medium' id='medium' type='text' value='web'/></p>
 		  <p><textarea name='comment' cols='80' rows='3'></textarea></p>
 		  <p><input type='submit' id='submitButton' value='Submit' /></p></form>
 		  <script language='Javascript'>turkSetAssignmentID();</script>
@@ -95,10 +95,29 @@ function create_custom_hit($hit_type, $reference_url){
 	return -1;
 }
 
+	function reviewable_hits(){
+		$r = new amt\reviewable_hitlist;
+		foreach ($r as $mhit) {
+			print_r($result);
+			print '<table><tr><td colspan=2>'. $result['assignmentId'] . '</td></tr>';
+			foreach ($mhit->results() as $result) {
+				echo '<tr><td>assignmentId</td><td>'. $result['assignmentId']. '</td></tr>';
+				echo '<tr><td>title</td><td>'. $result['title']. '</td></tr>';
+				echo '<tr><td>author</td><td>'. $result['author']. '</td></tr>';
+				echo '<tr><td>website_title</td><td>'. $result['website_title']. '</td></tr>';
+				echo '<tr><td>publisher</td><td>'. $result['publisher']. '</td></tr>';
+				echo '<tr><td>date_published</td><td>'. $result['date_published']. '</td></tr>';
+				echo '<tr><td>date_accessed</td><td>'. $result['date_accessed']. '</td></tr>';
+				echo '<tr><td>medium</td><td>'. $result['medium']. '</td></tr>';
+			}
+		  print '</table><p>';
+		}
+	}
 function execute_job($reference_url){
 	$hittype_id = create_request();
 	$hit = create_custom_hit($hittype_id, $reference_url);
-	$url = 'http://crowdref.atwebpages.com/triggerscript.php';
+	// $url = 'http://crowdref.atwebpages.com/triggerscript.php';
+	$url = 'http://crowdref.atwebpages.com/ref_responder.php';
 	attach_trigger($hittype_id, $url);
 	print $hit->HITId . ' - ' . $hit->HITTypeId . '<br>';
 }
