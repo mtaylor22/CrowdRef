@@ -50,7 +50,7 @@ function create_hit($hit_type){
 	return -1;
 }
 
-function create_custom_hit($hit_type){
+function create_custom_hit($hit_type, $reference_url){
 	// custom_ext_hit_request
 	try{
 		$annotation = 0;
@@ -66,8 +66,16 @@ function create_custom_hit($hit_type){
 		 </head>
 		 <body>
 		  <form name='mturk_form' method='post' id='mturk_form' action='https://www.mturk.com/mturk/externalSubmit'>
-		  <input type='hidden' value='' name='assignmentId' id='assignmentId'/>
-		  <h1>What's up?</h1>
+		  <input type='hidden' value='". $reference_url ."' name='assignmentId' id='assignmentId'/>
+		  <h1>Hi, please help us gather reference information</h1>
+		  <p>Please go to <a href='". $reference_url ."'>". $reference_url ."</a> and answer the questions below</p>
+		  <p>What is the title of the webpage/post/article? <input name='title' id='title' type='text' /></p>
+		  <p>Who are the author(s)/editor(s) of the webpage (seperated by a semicolon)? ex: lastname, first; lastname2, first2 <input name='author' id='author' type='text' /></p>
+		  <p>What was the title of the website itself? <input name='website_title' id='website_title' type='text' /></p>
+		  <p>Who published the webpage? <input name='publisher' id='publisher' type='text' /></p>
+		  <p>When was th webpage published? <input name='date_published' id='date_published' type='text' /></p>
+		  <p>What is the date you accessed this? <input name='date_accessed' id='date_accessed' type='text' /></p>
+		  <p>What was the medium of the webpage? <input name='web' id='web' type='text' value='web'/></p>
 		  <p><textarea name='comment' cols='80' rows='3'></textarea></p>
 		  <p><input type='submit' id='submitButton' value='Submit' /></p></form>
 		  <script language='Javascript'>turkSetAssignmentID();</script>
@@ -86,18 +94,20 @@ function create_custom_hit($hit_type){
 	}
 	return -1;
 }
-function execute_job(){
+
+function execute_job($reference_url){
 	$hittype_id = create_request();
-	$hit = create_custom_hit($hittype_id);
-
-	$a = array('HITReviewable', 'HITExpired');
-	$r = new amt\hittype_notification_request($hittype_id, 'http://crowdref.atwebpages.com/triggerscript.php', $a);
-	$r->execute();
-
-
+	$hit = create_custom_hit($hittype_id, $reference_url);
+	$url = 'http://crowdref.atwebpages.com/triggerscript.php';
+	attach_trigger($hittype_id, $url);
 	print $hit->HITId . ' - ' . $hit->HITTypeId . '<br>';
 }
 
+function attach_trigger($hittype_id, $url){
+	$a = array('HITReviewable', 'HITExpired');
+	$r = new amt\hittype_notification_request($hittype_id, $url, $a);
+	$r->execute();
+}
 
 function get_hits(){
 	echo "HIT ID: HIT Type IDn";

@@ -9,5 +9,5 @@
 	// print amt_get_balance
 	// create_request();
 
-	execute_job();
+	execute_job('http://www.ebay.com/');
 ?> hit?
