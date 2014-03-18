@@ -1,7 +1,9 @@
 <?php
 	session_start();
 	require 'pass.php';
+	require 'amt_op.php';
 	$db_connected = false;
+	$status_cap = 1;
 	function connect(){
 		global $db_connected, $db_name, $db_user, $db_pass, $db_host, $dbc;
 		try {
@@ -55,6 +57,39 @@
 		}
 		return false;
 	}
+	function increment_status($id){
+		global $dbc, $db_connected;
+		if (!$db_connected) return false;
+		try {
+			$sql = "UPDATE Ref SET status = status+1 WHERE id=:aid";
+			$q = $dbc->prepare($sql);
+			$q->bindParam(':aid', $id);
+			$q->execute();
+			return 0;
+		} catch(PDOException $e) {
+		    echo 'ERROR: ' . $e->getMessage();
+		    error_log('ERROR: ' . $e->getMessage());
+		    trigger('error updating pdo');
+	        return 1;
+		}
+		return 1;
+	}
+	function get_status($id){
+		global $dbc, $db_connected;
+		if (!$db_connected) return false;
+		try {
+			$data = $dbc->query('SELECT * FROM Ref WHERE id:'. $id );
+		    foreach($data as $row) {
+		    	$status = $row['status'];
+		    }
+		    return $row['status'];
+		} catch(PDOException $e) {
+		    echo 'ERROR: ' . $e->getMessage();
+		    error_log('ERROR: ' . $e->getMessage());
+	        return false;
+		}
+		return false;
+	}
 	function add_reference($ref_url){
 		// add reference url
 		global $dbc, $db_connected;
@@ -66,6 +101,7 @@
 			$q->bindParam(':ref_url', $ref_url);
 			$q->bindParam(':user', $_SESSION['email']);
 			$q->execute();
+			execute_job($ref_url, $dbc->lastInsertId());
 			return 0;
 		} catch(PDOException $e) {
 		    echo 'ERROR: ' . $e->getMessage();

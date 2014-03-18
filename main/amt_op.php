@@ -50,12 +50,13 @@ function create_hit($hit_type){
 	return -1;
 }
 
-function create_custom_hit($hit_type, $reference_url){
+function create_custom_hit($hit_type, $reference_url, $ref_id){
 	// custom_ext_hit_request
+	global $status_cap;
 	try{
 		$annotation = 0;
 		$lifetime = 5*60;
-		$job_qty = 1;
+		$job_qty =  $status_cap;
 		$question = "<HTMLQuestion xmlns='http://mechanicalturk.amazonaws.com/AWSMechanicalTurkDataSchemas/2011-11-11/HTMLQuestion.xsd'>
 		<HTMLContent><![CDATA[
 		<!DOCTYPE html>
@@ -67,6 +68,7 @@ function create_custom_hit($hit_type, $reference_url){
 		 <body>
 		  <form name='mturk_form' method='post' id='mturk_form' action='https://www.mturk.com/mturk/externalSubmit'>
 		  <input type='hidden' value='". $reference_url ."' name='assignmentId' id='assignmentId'/>
+		  <input type='hidden' value='". $ref_id ."' name='ref_id' id='ref_id'/>
 		  <input type='hidden' value='". $reference_url ."' name='url' id='url'/>
 		  <h1>Hi, please help us gather reference information</h1>
 		  <p>Please go to <a href='". $reference_url ."'>". $reference_url ."</a> and answer the questions below</p>
@@ -114,9 +116,9 @@ function create_custom_hit($hit_type, $reference_url){
 		  print '</table><p>';
 		}
 	}
-function execute_job($reference_url){
+function execute_job($reference_url, $ref_id){
 	$hittype_id = create_request();
-	$hit = create_custom_hit($hittype_id, $reference_url);
+	$hit = create_custom_hit($hittype_id, $reference_url, $ref_id);
 	// $url = 'http://crowdref.atwebpages.com/triggerscript.php';
 	$url = 'http://crowdref.atwebpages.com/ref_responder.php';
 	attach_trigger($hittype_id, $url);
