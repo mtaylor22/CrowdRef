@@ -55,7 +55,7 @@ function create_custom_hit($hit_type, $reference_url){
 	try{
 		$annotation = 0;
 		$lifetime = 5*60;
-		$job_qty = 3;
+		$job_qty = 1;
 		$question = "<HTMLQuestion xmlns='http://mechanicalturk.amazonaws.com/AWSMechanicalTurkDataSchemas/2011-11-11/HTMLQuestion.xsd'>
 		<HTMLContent><![CDATA[
 		<!DOCTYPE html>
@@ -67,6 +67,7 @@ function create_custom_hit($hit_type, $reference_url){
 		 <body>
 		  <form name='mturk_form' method='post' id='mturk_form' action='https://www.mturk.com/mturk/externalSubmit'>
 		  <input type='hidden' value='". $reference_url ."' name='assignmentId' id='assignmentId'/>
+		  <input type='hidden' value='". $reference_url ."' name='url' id='url'/>
 		  <h1>Hi, please help us gather reference information</h1>
 		  <p>Please go to <a href='". $reference_url ."'>". $reference_url ."</a> and answer the questions below</p>
 		  <p>What is the title of the webpage/post/article? <input name='title' id='title' type='text' /></p>
@@ -99,9 +100,9 @@ function create_custom_hit($hit_type, $reference_url){
 		$r = new amt\reviewable_hitlist;
 		foreach ($r as $mhit) {
 			print_r($result);
-			print '<table><tr><td colspan=2>'. $result['assignmentId'] . '</td></tr>';
+			print '<table><tr><td colspan=2>'. $result['url'] . '</td></tr>';
 			foreach ($mhit->results() as $result) {
-				echo '<tr><td>assignmentId</td><td>'. $result['assignmentId']. '</td></tr>';
+				echo '<tr><td>AssignmentId</td><td>'. $result['AssignmentId']. '</td></tr>';
 				echo '<tr><td>title</td><td>'. $result['title']. '</td></tr>';
 				echo '<tr><td>author</td><td>'. $result['author']. '</td></tr>';
 				echo '<tr><td>website_title</td><td>'. $result['website_title']. '</td></tr>';

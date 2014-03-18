@@ -91,20 +91,23 @@
 			$q->bindParam(':medium', $medium);
 			$q->bindParam(':ref', $ref);
 			$q->execute();
+		    trigger("Should have worked");
 			return 0;
 		} catch(PDOException $e) {
 		    echo 'ERROR: ' . $e->getMessage();
 		    error_log('ERROR: ' . $e->getMessage());
+		    trigger("PDOException in add_ref_res");
 	        return 3;
 		}
 		// call hit creation for job 1
+	    trigger("???");
 		return 4;
 	}
-	function trigger(){
+	function trigger($value="hi"){
 		global $dbc, $db_connected;
 		if (!$db_connected) return 1;
 		try {
-			$sql = "INSERT INTO trig (tgval) VALUES ('hi')";
+			$sql = "INSERT INTO trig (tgval) VALUES ('".$value."')";
 			$q = $dbc->prepare($sql);
 			$q->execute();
 			print 'inserted';
