@@ -1,7 +1,6 @@
 <?php
 require 'sql_op.php';
 initialize();
-trigger('peep');
 try {
 	$hits_treated = array(); // prevent handling the same HIT twice
 	$notifications = amt\notification_response::acquire();
@@ -12,13 +11,7 @@ try {
 		$results = new amt\results($n->hit_id);
 		foreach ($results as $result) {
 			$result->approve(); 
-			add_reference_result($result['title'], $result['author'], $result['website_title'], $result['publisher'], $result['date_published'], $result['date_accessed'], $result['medium'], $result['ref_id']);
-			$status = get_status($result['ref_id']);
-			if ($status <= $status_cap){
-				//time to post final job collector
-				execute_final_job($result['ref_id'], get_ref_url($result['ref_id']));
-				trigger('post final job');
-			}
+			trigger('result selected as '. $result['result_selection']);
 		}
 		$hit = new amt\minimal_hit($n->hit_id);
 		$hit->dispose();

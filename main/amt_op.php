@@ -32,24 +32,6 @@ function create_request(){
 	return -1;
 }
 
-function create_hit($hit_type){
-	try{
-		// $hit_type = create_request(); // somehow acquire the HITType ID of the HIT
-		$job_id = 0;    // somehow identify the specific task
-		$url = 'http://my_site/hit_page.php?job_id=' . $job_id;
-		$lifetime = 5 * 60;        // The task is expired after 5 minutes
-		$job_qty = 5;              // We want 5 workers to have a go at this
-		$r = new amt\external_hit_request($hit_type, $url, $job_id, $lifetime, $job_qty);
-		$hit_id = $r->execute();   // after calling this, the HIT is 'assignable'
-		// print '.- '.$hit_id. '<br>';
-		return $hit_id;
-	} catch (Exception $e) {
-		print $e->getMessage() . $e->xmldata();
-		error_log($e->getMessage() . $e->xmldata());
-	}
-	return -1;
-}
-
 function create_custom_hit($hit_type, $reference_url, $ref_id){
 	// custom_ext_hit_request
 	global $status_cap;
@@ -79,7 +61,6 @@ function create_custom_hit($hit_type, $reference_url, $ref_id){
 		  <p>When was th webpage published? <input name='date_published' id='date_published' type='text' /></p>
 		  <p>What is the date you accessed this? <input name='date_accessed' id='date_accessed' type='text' /></p>
 		  <p>What was the medium of the webpage? <input name='medium' id='medium' type='text' value='web'/></p>
-		  <p><textarea name='comment' cols='80' rows='3'></textarea></p>
 		  <p><input type='submit' id='submitButton' value='Submit' /></p></form>
 		  <script language='Javascript'>turkSetAssignmentID();</script>
 		 </body>
@@ -98,24 +79,87 @@ function create_custom_hit($hit_type, $reference_url, $ref_id){
 	return -1;
 }
 
-	function reviewable_hits(){
-		$r = new amt\reviewable_hitlist;
-		foreach ($r as $mhit) {
-			print_r($result);
-			print '<table><tr><td colspan=2>'. $result['url'] . '</td></tr>';
-			foreach ($mhit->results() as $result) {
-				echo '<tr><td>AssignmentId</td><td>'. $result['AssignmentId']. '</td></tr>';
-				echo '<tr><td>title</td><td>'. $result['title']. '</td></tr>';
-				echo '<tr><td>author</td><td>'. $result['author']. '</td></tr>';
-				echo '<tr><td>website_title</td><td>'. $result['website_title']. '</td></tr>';
-				echo '<tr><td>publisher</td><td>'. $result['publisher']. '</td></tr>';
-				echo '<tr><td>date_published</td><td>'. $result['date_published']. '</td></tr>';
-				echo '<tr><td>date_accessed</td><td>'. $result['date_accessed']. '</td></tr>';
-				echo '<tr><td>medium</td><td>'. $result['medium']. '</td></tr>';
-			}
-		  print '</table><p>';
-		}
+function create_review_request(){
+	try{
+		$r = new amt\hittype_request;
+		$title = "Confirm or Supplement Webpage Reference information";
+		$description = "Using the given URL, you will be asked to check or correct supplied reference information such as author, title, etc.";
+		$reward = 0.03;
+		$assignmentduration = 60*60;
+		$keywords = "Reference, citation, mla, apa, title, author, review";
+		$maxassignments = 1;
+		$autoapprovaldelay = 3600;
+		$r->set_params($reward, $title, $description, $assignmentduration, $keywords, $autoapprovaldelay);
+		$typeid = $r->execute();
+		return $typeid;
+	} catch (amt\Exception $e) {
+		print $e->getMessage() . $e->xmldata();
+		error_log($e->getMessage() . $e->xmldata());
 	}
+	return -1;
+}
+
+
+function create_custom_review_hit($hit_type, $reference_url, $ref_id){
+	// custom_ext_hit_request
+	global $status_cap;
+	try{
+		$annotation = 0;
+		$lifetime = 5*60;
+		$job_qty =  $status_cap;
+		$question = "<HTMLQuestion xmlns='http://mechanicalturk.amazonaws.com/AWSMechanicalTurkDataSchemas/2011-11-11/HTMLQuestion.xsd'>
+		<HTMLContent><![CDATA[
+		<!DOCTYPE html>
+		<html>
+		 <head>
+		  <meta http-equiv='Content-Type' content='text/html; charset=UTF-8'/>
+		  <script type='text/javascript' src='https://s3.amazonaws.com/mturk-public/externalHIT_v1.js'></script>
+		 </head>
+		 <body>
+		  <form name='mturk_form' method='post' id='mturk_form' action='https://www.mturk.com/mturk/externalSubmit'>
+		  <input type='hidden' value='". $reference_url ."' name='assignmentId' id='assignmentId'/>
+		  <input type='hidden' value='". $ref_id ."' name='ref_id' id='ref_id'/>
+		  <input type='hidden' value='". $reference_url ."' name='url' id='url'/>  
+		  <input type='hidden' value='' name='workerId' id='workerId'/>
+		  <h1>Hi, please help us correct reference information</h1>
+		  <p>". generate_comparison_table($ref_id) ."</p>
+		  <p>Please type the # of the most accurate result set:<input type='text' id='result_selection' name='result_selection'></p>
+		  <p><input type='submit' id='submitButton' value='Submit' /></p></form>
+		<script language='Javascript'>turkSetAssignmentID();</script>
+		</body>
+		</html>
+		]]>
+		  </HTMLContent>
+		  <FrameHeight>450</FrameHeight>
+		</HTMLQuestion>";
+		$r = new amt\custom_ext_hit_request($hit_type, $annotation, $lifetime, $job_qty, $question);
+		$hit = $r->execute();   // after calling this, the HIT is 'assignable'
+		return $hit;
+	} catch (amt\Exception $e) {
+		print $e->getMessage() . $e->xmldata();
+		error_log($e->getMessage() . $e->xmldata());
+	}
+	return -1;
+}
+
+function reviewable_hits(){
+	$r = new amt\reviewable_hitlist;
+	foreach ($r as $mhit) {
+		print_r($result);
+		print '<table><tr><td colspan=2>'. $result['url'] . '</td></tr>';
+		foreach ($mhit->results() as $result) {
+			echo '<tr><td>AssignmentId</td><td>'. $result['AssignmentId']. '</td></tr>';
+			echo '<tr><td>title</td><td>'. $result['title']. '</td></tr>';
+			echo '<tr><td>author</td><td>'. $result['author']. '</td></tr>';
+			echo '<tr><td>website_title</td><td>'. $result['website_title']. '</td></tr>';
+			echo '<tr><td>publisher</td><td>'. $result['publisher']. '</td></tr>';
+			echo '<tr><td>date_published</td><td>'. $result['date_published']. '</td></tr>';
+			echo '<tr><td>date_accessed</td><td>'. $result['date_accessed']. '</td></tr>';
+			echo '<tr><td>medium</td><td>'. $result['medium']. '</td></tr>';
+		}
+	  print '</table><p>';
+	}
+}
 function execute_job($reference_url, $ref_id){
 	$hittype_id = create_request();
 	$hit = create_custom_hit($hittype_id, $reference_url, $ref_id);
@@ -123,6 +167,13 @@ function execute_job($reference_url, $ref_id){
 	$url = 'http://crowdref.atwebpages.com/ref_responder.php';
 	attach_trigger($hittype_id, $url);
 	print $hit->HITId . ' - ' . $hit->HITTypeId . '<br>';
+}
+function execute_final_job($ref_id, $reference_url){
+	$hittype_id = create_review_request();
+	$hit = create_custom_review_hit($hittype_id, $reference_url, $ref_id);
+	$url = 'http://crowdref.atwebpages.com/ref_final_responder.php';
+	attach_trigger($hittype_id, $url);
+	trigger( $hit->HITId . ' - ' . $hit->HITTypeId );
 }
 
 function attach_trigger($hittype_id, $url){

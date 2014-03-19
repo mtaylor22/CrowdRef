@@ -82,7 +82,23 @@
 		    foreach($data as $row) {
 		    	$status = $row['status'];
 		    }
-		    return $row['status'];
+		    return $status;
+		} catch(PDOException $e) {
+		    echo 'ERROR: ' . $e->getMessage();
+		    error_log('ERROR: ' . $e->getMessage());
+	        return false;
+		}
+		return false;
+	}
+	function get_ref_url($id){
+		global $dbc, $db_connected;
+		if (!$db_connected) return false;
+		try {
+			$data = $dbc->query('SELECT * FROM Ref WHERE id:'. $id );
+		    foreach($data as $row) {
+		    	$url = $row['url'];
+		    }
+		    return $url;
 		} catch(PDOException $e) {
 		    echo 'ERROR: ' . $e->getMessage();
 		    error_log('ERROR: ' . $e->getMessage());
@@ -126,6 +142,7 @@
 			$q->bindParam(':date_accessed', $date_accessed);
 			$q->bindParam(':medium', $medium);
 			$q->bindParam(':ref', $ref);
+			// $q->bindParam(':workerid', $workerid);
 			$q->execute();
 		    trigger("Should have worked");
 			return 0;
@@ -154,5 +171,61 @@
 	        return 3;
 		}
 		return 1;
+	}
+	function resetdb(){
+		global $dbc, $db_connected;
+		if (!$db_connected) return 1;
+		try {
+			$q1 = "TRUNCATE Ref";
+			$q = $dbc->prepare($q1);
+			$q->execute();
+			$q2 = "TRUNCATE Refdata";
+			$q = $dbc->prepare($q2);
+			$q->execute();
+			$q3 = "TRUNCATE trig";
+			$q = $dbc->prepare($q3);
+			$q->execute();
+			$q4 = "ALTER TABLE Ref AUTO_INCREMENT = 1";
+			$q = $dbc->prepare($q4);
+			$q->execute();
+			$q5 = "ALTER TABLE Refdata AUTO_INCREMENT = 1";
+			$q = $dbc->prepare($q5);
+			$q->execute();
+			$q6 = "ALTER TABLE trig AUTO_INCREMENT = 1";
+			$q = $dbc->prepare($q6);
+			$q->execute();
+			return 0;
+		} catch(PDOException $e) {
+		    echo 'ERROR: ' . $e->getMessage();
+		    error_log('ERROR: ' . $e->getMessage());
+	        return 3;
+		}
+		return 1;
+	}
+	function generate_comparison_table($ref_id){
+		global $dbc, $db_connected;
+		if (!$db_connected) return false;
+		try {
+			$output_str = '';
+			$data = $dbc->query('SELECT * FROM Refdata WHERE ref:'. $ref_id );
+		    foreach($data as $row) {
+				$table = '<table><tbody><tr><td colspan=2>Table #'. $row['id']. '</td></tr>';
+				$table.= '<tr><td>Title of Document</td><td>'.$row['title'].'</td></tr>';
+				$table.= '<tr><td>Author(s)/Editor(s)</td><td>'.$row['author '].'</td></tr>';
+				$table.= '<tr><td>Title</td><td>'.$row['website_title'].'</td></tr>';
+				$table.= '<tr><td>Title</td><td>'.$row['publisher'].'</td></tr>';
+				$table.= '<tr><td>Title</td><td>'.$row['date_published'].'</td></tr>';
+				$table.= '<tr><td>Title</td><td>'.$row['date_accessed'].'</td></tr>';
+				$table.= '<tr><td>Title</td><td>'.$row['medium'].'</td></tr>';
+				$table.= '</tbody></table>';
+				$output_str.=$table;
+		    }
+		    return $output_str;
+		} catch(PDOException $e) {
+		    echo 'ERROR: ' . $e->getMessage();
+		    error_log('ERROR: ' . $e->getMessage());
+	        return false;
+		}
+		return false;
 	}
 ?>
