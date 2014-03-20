@@ -159,8 +159,7 @@
 			$q->bindParam(':ref', $ref);
 			$q->bindParam(':workerid', $workerid);
 			$q->execute();
-		    trigger("Should have worked");
-			return 0;
+		    return 0;
 		} catch(PDOException $e) {
 		    echo 'ERROR: ' . $e->getMessage();
 		    error_log('ERROR: ' . $e->getMessage());

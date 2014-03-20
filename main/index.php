@@ -105,12 +105,42 @@
 		function login_slide_closed(){
 			$('#login_container').animate({height: "30px"}, 500);
 		}
+		function ref_text_focus(){
+			if ($('#ref_text').val() == 'Enter URL'){
+				$('#ref_text').css('color', '#000');
+				$('#ref_text').val('');
+			}
+		}
+		function ref_text_unfocus(){
+			if ($('#ref_text').val() == ''){
+				$('#ref_text').css('color', '#444');
+				$('#ref_text').val('Enter URL');
+			}
+		}
 	</script>
 </head>
 <body>
 
 	<div id="container">
 		<div id="left">
+			<h3 style="font-family:Georgia; font-size:22px; text-align:center; font-weight:bold; margin-top:7px; padding:7px; color:#BBB; border-bottom: 2px #bbb dashed;">
+				What is CrowdRef?
+			</h3>
+			<div id="what_is_content" style="color:#AAA; font-family:arial; padding:12px;">
+				CrowdRef is a Crowd-Powered System designed to harness the power of human crowd workers to create citations/references. 
+			</div>
+			<h3 style="font-family:Georgia; font-size:22px; text-align:center; font-weight:bold; margin-top:7px; padding:7px; color:#BBB; border-bottom: 2px #bbb dashed;">
+				How Does it Work?
+			</h3>
+			<div id="what_is_content" style="color:#AAA; font-family:arial; padding:12px;">
+				When you request a citation in CrowdRef, job(s) are posted on Amazon Mechanical Turk. These jobs pay workers for gathering reference-related information from the URL you provide. Once the job(s) are complete, a final job is posted asking a worker to choose the best solution. This worker's choice will trigger reference generation in our systems, and you will be notified upon completion.
+			</div>
+			<h3 style="font-family:Georgia; font-size:22px; text-align:center; font-weight:bold; margin-top:7px; padding:7px; color:#BBB; border-bottom: 2px #bbb dashed;">
+				Who Can Use CrowdRef?
+			</h3>
+			<div id="what_is_content" style="color:#AAA; font-family:arial; padding:12px;">
+				CrowdRef is currently in development, and not open to new users. 
+			</div>
 			<div id="login_container">
 				<div id="login_control">
 				<?php 
@@ -135,9 +165,15 @@
 		<div id="right"></div>
 		<div id="banner_holder" style="width:40%;">
 			<img id="banner" style="width:100%" src="banner.png">
-			<form method="post" action="submitref.php">
-				<input type="text" id="ref_text" name="ref_text" value="Enter URL" style="background-color:#EEE; color:#333; width:80%; height:40px;line-height:20px; margin-top:10px; font-size:18px; border:2px solid #CCC; outline:none;text-indent:5px;">
-				<input type="submit" id="ref_submit" name="ref_submit" style="width:19%; height:40px; background-color:#EEE;font-weight:bold; font-family:arial; border:2px solid #CCC; outline:none;" value="Get Reference">
+			<form method="post" id="ref_form" name="ref_form" action="submitref.php">
+				<input type="text" id="ref_text" onblur="ref_text_unfocus()" onfocus="ref_text_focus()" name="ref_text" value="Enter URL" style="color:#444;background-color:#EEE; color:#333; width:80%; height:40px;line-height:20px; margin-top:10px; font-size:18px; border:2px solid #CCC; outline:none;text-indent:5px;">
+				<input<?php 
+					if ($_SESSION['user_logged']){
+						print ' type="submit" onclick="$(\'ref_form\').trigger(\'submit\')" ';
+					} else {
+						print ' type="button" onclick="alert(\'Please log in first\');" ';
+					}
+				?>id="ref_submit" name="ref_submit" style="width:19%; height:40px; background-color:#EEE;font-weight:bold; font-family:arial; border:2px solid #CCC; outline:none;" value="Get Reference">
 			</form>
 		</div>
 	</div>

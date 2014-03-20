@@ -1,11 +1,11 @@
 <?php
 require 'sql_op.php';
-trigger('hit responder');
+// trigger('hit responder');
 initialize();
 try {
 	$hits_treated = array(); // prevent handling the same HIT twice
 	$notifications = amt\notification_response::acquire();
-	trigger('hit responderacquired hit' );
+	// trigger('hit responderacquired hit' );
 	foreach ($notifications as $n) {
 		if (in_array($n->hit_id, $hits_treated)) 
 			continue;
@@ -19,7 +19,7 @@ try {
 			if ($status <= $status_cap){
 				//time to post final job collector
 				execute_final_job($result['ref_id'], get_ref_url($result['ref_id']));
-				trigger('post final job');
+				// trigger('post final job');
 			}
 		}
 		$hit = new amt\minimal_hit($n->hit_id);
