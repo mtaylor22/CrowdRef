@@ -13,13 +13,14 @@ try {
 		$results = new amt\results($n->hit_id);
 		foreach ($results as $result) {
 			$result->approve(); 
-			add_reference_result($result['title'], $result['author'], $result['website_title'], $result['publisher'], $result['date_published'], $result['date_accessed'], $result['medium'], $result['ref_id'], $result['WorkerId']);
+			$arr = add_reference_result($result['title'], $result['author'], $result['website_title'], $result['publisher'], $result['date_published'], $result['date_accessed'], $result['medium'], $result['ref_id'], $result['WorkerId']);
+			if ($arr != 0) continue;
 			$status = get_status($result['ref_id']);
-			// if ($status <= $status_cap){
-			// 	//time to post final job collector
-			// 	execute_final_job($result['ref_id'], get_ref_url($result['ref_id']));
-			// 	trigger('post final job');
-			// }
+			if ($status <= $status_cap){
+				//time to post final job collector
+				execute_final_job($result['ref_id'], get_ref_url($result['ref_id']));
+				trigger('post final job');
+			}
 		}
 		$hit = new amt\minimal_hit($n->hit_id);
 		$hit->dispose();

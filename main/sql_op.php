@@ -127,10 +127,25 @@
 		// call hit creation for job 1
 		return 4;
 	}
-
+	function reference_exists($workerid, $ref_id){
+		global $dbc, $db_connected;
+		if (!$db_connected) return -1;
+		try {
+			$data = $dbc->query('SELECT * FROM Refdata WHERE ref='. $ref_id . ' AND workerid="'. $workerid . '"');
+		    foreach($data as $row) {
+		    	return true;
+		    }
+		} catch(PDOException $e) {
+		    echo 'ERROR: ' . $e->getMessage();
+		    error_log('ERROR: ' . $e->getMessage());
+	        return false;
+		}
+		return false;
+	}
 	function add_reference_result($title, $author, $website_title, $publisher, $date_published, $date_accessed, $medium, $ref, $workerid){
 		global $dbc, $db_connected;
 		if (!$db_connected) return 1;
+		if (reference_exists($workerid, $ref)) return 1; //prevent workerdata from being double-counted
 		try {
 			$sql = "INSERT INTO Refdata (title, author, website_title, publisher, date_published, date_accessed, medium, ref, workerid) VALUES (:title, :author, :website_title, :publisher, :date_published, :date_accessed, :medium, :ref, :workerid)";
 			$q = $dbc->prepare($sql);
@@ -207,7 +222,7 @@
 		if (!$db_connected) return false;
 		try {
 			$output_str = '';
-			$data = $dbc->query('SELECT * FROM Refdata WHERE ref:'. $ref_id );
+			$data = $dbc->query('SELECT * FROM Refdata WHERE ref='. $ref_id );
 		    foreach($data as $row) {
 				$table = '<table><tbody><tr><td colspan=2>Table #'. $row['id']. '</td></tr>';
 				$table.= '<tr><td>Title of Document</td><td>'.$row['title'].'</td></tr>';

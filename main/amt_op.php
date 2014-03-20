@@ -131,7 +131,7 @@ function create_custom_review_hit($hit_type, $reference_url, $ref_id){
 		]]>
 		  </HTMLContent>
 		  <FrameHeight>450</FrameHeight>
-		</HTMLQuestion>";
+		</HTMLQuestion>";//do unicode vers
 		$r = new amt\custom_ext_hit_request($hit_type, $annotation, $lifetime, $job_qty, $question);
 		$hit = $r->execute();   // after calling this, the HIT is 'assignable'
 		return $hit;
