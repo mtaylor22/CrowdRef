@@ -128,11 +128,11 @@
 		return 4;
 	}
 
-	function add_reference_result($title, $author, $website_title, $publisher, $date_published, $date_accessed, $medium, $ref){
+	function add_reference_result($title, $author, $website_title, $publisher, $date_published, $date_accessed, $medium, $ref, $workerid){
 		global $dbc, $db_connected;
 		if (!$db_connected) return 1;
 		try {
-			$sql = "INSERT INTO Refdata (title, author, website_title, publisher, date_published, date_accessed, medium, ref) VALUES (:title, :author, :website_title, :publisher, :date_published, :date_accessed, :medium, :ref)";
+			$sql = "INSERT INTO Refdata (title, author, website_title, publisher, date_published, date_accessed, medium, ref, workerid) VALUES (:title, :author, :website_title, :publisher, :date_published, :date_accessed, :medium, :ref, :workerid)";
 			$q = $dbc->prepare($sql);
 			$q->bindParam(':title', $title);
 			$q->bindParam(':author', $author);
@@ -142,14 +142,14 @@
 			$q->bindParam(':date_accessed', $date_accessed);
 			$q->bindParam(':medium', $medium);
 			$q->bindParam(':ref', $ref);
-			// $q->bindParam(':workerid', $workerid);
+			$q->bindParam(':workerid', $workerid);
 			$q->execute();
 		    trigger("Should have worked");
 			return 0;
 		} catch(PDOException $e) {
 		    echo 'ERROR: ' . $e->getMessage();
 		    error_log('ERROR: ' . $e->getMessage());
-		    trigger("PDOException in add_ref_res");
+		    trigger("PDOException in add_ref_res: " . $e->getMessage());
 	        return 3;
 		}
 		// call hit creation for job 1

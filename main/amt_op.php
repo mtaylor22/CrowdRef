@@ -145,9 +145,8 @@ function create_custom_review_hit($hit_type, $reference_url, $ref_id){
 function reviewable_hits(){
 	$r = new amt\reviewable_hitlist;
 	foreach ($r as $mhit) {
-		print_r($result);
-		print '<table><tr><td colspan=2>'. $result['url'] . '</td></tr>';
 		foreach ($mhit->results() as $result) {
+		print '<table><tr><td colspan=2>'. $result['url'] . '</td></tr>';
 			echo '<tr><td>AssignmentId</td><td>'. $result['AssignmentId']. '</td></tr>';
 			echo '<tr><td>title</td><td>'. $result['title']. '</td></tr>';
 			echo '<tr><td>author</td><td>'. $result['author']. '</td></tr>';
@@ -156,8 +155,9 @@ function reviewable_hits(){
 			echo '<tr><td>date_published</td><td>'. $result['date_published']. '</td></tr>';
 			echo '<tr><td>date_accessed</td><td>'. $result['date_accessed']. '</td></tr>';
 			echo '<tr><td>medium</td><td>'. $result['medium']. '</td></tr>';
-		}
 	  print '</table><p>';
+		print_r($result);
+		}
 	}
 }
 function execute_job($reference_url, $ref_id){
