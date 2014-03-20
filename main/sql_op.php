@@ -222,21 +222,48 @@
 		if (!$db_connected) return false;
 		try {
 			$output_str = '';
-			$data = $dbc->query('SELECT * FROM Refdata WHERE ref='. $ref_id );
-		    foreach($data as $row) {
-				$table = '<table><tbody><tr><td colspan=2>Table #'. $row['id']. '</td></tr>';
-				$table.= '<tr><td>Title of Document</td><td>'.$row['title'].'</td></tr>';
-				$table.= '<tr><td>Author(s)/Editor(s)</td><td>'.$row['author '].'</td></tr>';
-				$table.= '<tr><td>Title</td><td>'.$row['website_title'].'</td></tr>';
-				$table.= '<tr><td>Title</td><td>'.$row['publisher'].'</td></tr>';
-				$table.= '<tr><td>Title</td><td>'.$row['date_published'].'</td></tr>';
-				$table.= '<tr><td>Title</td><td>'.$row['date_accessed'].'</td></tr>';
-				$table.= '<tr><td>Title</td><td>'.$row['medium'].'</td></tr>';
-				$table.= '</tbody></table>';
-				$output_str.=$table;
+			$stmt = $dbc->query('SELECT * FROM Refdata WHERE ref='. $ref_id );
+			while($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+				$output_str.='
+				<table border="0" cellpadding="0" cellspacing="4">
+					<tbody>
+						<tr>
+							<td colspan="2">Table #'. $row['id']. '</td>
+						</tr>
+						<tr>
+							<td>Title of Document</td>
+							<td>'.$row['title'].'</td>
+						</tr>
+						<tr>
+							<td>Author(s)/Editor(s)</td>
+							<td>'.$row['author'].'</td>
+						</tr>
+						<tr>
+							<td>Website Title</td>
+							<td>'.$row['website_title'].'</td>
+						</tr>
+						<tr>
+							<td>Publisher</td>
+							<td>'.$row['publisher'].'</td>
+						</tr>
+						<tr>
+							<td>Date Published</td>
+							<td>'.$row['date_published'].'</td>
+						</tr>
+						<tr>
+							<td>Date Accessed</td>
+							<td>'.$row['date_accessed'].'</td>
+						</tr>
+						<tr>
+							<td>Medium</td>
+							<td>'.$row['medium'].'</td>
+						</tr>
+					</tbody>
+				</table>';
 		    }
 		    return $output_str;
 		} catch(PDOException $e) {
+			trigger('error in table gen');
 		    echo 'ERROR: ' . $e->getMessage();
 		    error_log('ERROR: ' . $e->getMessage());
 	        return false;

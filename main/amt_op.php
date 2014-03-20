@@ -122,7 +122,7 @@ function create_custom_review_hit($hit_type, $reference_url, $ref_id){
 		  <input type='hidden' value='". $reference_url ."' name='url' id='url'/>  
 		  <input type='hidden' value='' name='workerId' id='workerId'/>
 		  <h1>Hi, please help us correct reference information</h1>
-		  <p>". generate_comparison_table($ref_id) ."</p>
+		  ". generate_comparison_table(1) ."
 		  <p>Please type the # of the most accurate result set:<input type='text' id='result_selection' name='result_selection'></p>
 		  <p><input type='submit' id='submitButton' value='Submit' /></p></form>
 		<script language='Javascript'>turkSetAssignmentID();</script>
@@ -136,6 +136,7 @@ function create_custom_review_hit($hit_type, $reference_url, $ref_id){
 		$hit = $r->execute();   // after calling this, the HIT is 'assignable'
 		return $hit;
 	} catch (amt\Exception $e) {
+		trigger('error: '. $e->getMessage() );
 		print $e->getMessage() . $e->xmldata();
 		error_log($e->getMessage() . $e->xmldata());
 	}
