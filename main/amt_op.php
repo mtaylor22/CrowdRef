@@ -122,8 +122,10 @@ function create_custom_review_hit($hit_type, $reference_url, $ref_id){
 		  <input type='hidden' value='". $reference_url ."' name='url' id='url'/>  
 		  <input type='hidden' value='' name='workerId' id='workerId'/>
 		  <h1>Hi, please help us correct reference information</h1>
-		  ". generate_comparison_table(1) ."
-		  <p>Please type the # of the most accurate result set:<input type='text' id='result_selection' name='result_selection'></p>
+		  <p>Please go to <a href='". $reference_url ."'>". $reference_url ."</a> and answer the question below</p>
+		  ". generate_comparison_table($ref_id) ."
+		  <p>Please select the option that best describes the reference</p>
+		  ". generate_table_options($ref_id) ."
 		  <p><input type='submit' id='submitButton' value='Submit' /></p></form>
 		<script language='Javascript'>turkSetAssignmentID();</script>
 		</body>

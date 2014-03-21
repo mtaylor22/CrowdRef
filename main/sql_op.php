@@ -227,7 +227,7 @@
 				<table border="0" cellpadding="0" cellspacing="4">
 					<tbody>
 						<tr>
-							<td colspan="2">Table #'. $row['id']. '</td>
+							<td colspan="2"><b>Table #'. $row['id']. '</b></td>
 						</tr>
 						<tr>
 							<td>Title of Document</td>
@@ -260,6 +260,62 @@
 					</tbody>
 				</table>';
 		    }
+		    $output_str.='
+				<table border="0" cellpadding="0" cellspacing="4">
+					<tbody>
+						<tr>
+							<td colspan="2"><b>Correction Table</b></td>
+						</tr>
+						<tr>
+							<td>Title of Document</td>
+							<td><input id="title" name="title" /></td>
+						</tr>
+						<tr>
+							<td>Author(s)/Editor(s)</td>
+							<td><input id="author" name="author" /></td>
+						</tr>
+						<tr>
+							<td>Website Title</td>
+							<td><input id="website_title" name="website_title" /></td>
+						</tr>
+						<tr>
+							<td>Publisher</td>
+							<td><input id="publisher" name="publisher" /></td>
+						</tr>
+						<tr>
+							<td>Date Published</td>
+							<td><input id="date_published" name="date_published" /></td>
+						</tr>
+						<tr>
+							<td>Date Accessed</td>
+							<td><input id="date_accessed" name="date_accessed" /></td>
+						</tr>
+						<tr>
+							<td>Medium</td>
+							<td><input id="medium" name="medium" /></td>
+						</tr>
+					</tbody>
+				</table>';
+		    return $output_str;
+		} catch(PDOException $e) {
+			trigger('error in table gen');
+		    echo 'ERROR: ' . $e->getMessage();
+		    error_log('ERROR: ' . $e->getMessage());
+	        return false;
+		}
+		return false;
+	}
+	function generate_table_options($ref_id){
+		global $dbc, $db_connected;
+		if (!$db_connected) return false;
+		try {
+			$output_str = '<p><label for="result_selection">Please select the option that best describes that information:</label><select name="result_selection" id="result_selection">';
+			$stmt = $dbc->query('SELECT * FROM Refdata WHERE ref='. $ref_id );
+			while($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+				$output_str.= '<option value="'.$row['id'].'">'.$row['id'].'</option>';
+		    }
+
+		    $output_str .= '<option value="99">None</option></select></p>';
 		    return $output_str;
 		} catch(PDOException $e) {
 			trigger('error in table gen');

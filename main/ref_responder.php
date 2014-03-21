@@ -15,6 +15,7 @@ try {
 			$result->approve(); 
 			$arr = add_reference_result($result['title'], $result['author'], $result['website_title'], $result['publisher'], $result['date_published'], $result['date_accessed'], $result['medium'], $result['ref_id'], $result['WorkerId']);
 			if ($arr != 0) continue;
+			increment_status($result['ref_id']);
 			$status = get_status($result['ref_id']);
 			if ($status <= $status_cap){
 				//time to post final job collector
