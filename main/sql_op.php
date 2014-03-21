@@ -325,4 +325,31 @@
 		}
 		return false;
 	}
+	function get_references($user){
+		global $dbc, $db_connected;
+		if (!$db_connected) return -1;
+		try {
+			$data = $dbc->query('SELECT * FROM Ref WHERE user="'.$user.'"');
+			return $data->fetchAll (PDO::FETCH_ASSOC);
+		} catch(PDOException $e) {
+		    echo 'ERROR: ' . $e->getMessage();
+		    error_log('ERROR: ' . $e->getMessage());
+	        return false;
+		}
+		return false;
+	}
+
+	function get_notifications($user){
+		global $dbc, $db_connected;
+		if (!$db_connected) return -1;
+		try {
+			$data = $dbc->query('SELECT * FROM Notification WHERE user="'.$user.'"');
+			return $data;
+		} catch(PDOException $e) {
+		    echo 'ERROR: ' . $e->getMessage();
+		    error_log('ERROR: ' . $e->getMessage());
+	        return false;
+		}
+		return false;
+	}
 ?>

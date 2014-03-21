@@ -11,6 +11,7 @@ try {
 		$results = new amt\results($n->hit_id);
 		foreach ($results as $result) {
 			$result->approve(); 
+			increment_status($result['ref_id']);
 			trigger('result selected as '. $result['result_selection']);
 		}
 		$hit = new amt\minimal_hit($n->hit_id);
