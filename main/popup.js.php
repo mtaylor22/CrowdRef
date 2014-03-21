@@ -1,7 +1,18 @@
+<?php
+	require 'sql_op.php';
+	initialize();
+	if (isset($_POST['login_submit'])){
+		if (user_login($_POST['login_email'], $_POST['login_password']))
+			print 'password accepted';
+		else
+			print 'password denied';
+	}
+?>
+
 <!doctype html>
 <html>
   <head>
-    <title>Getting Started Extension's Popup</title>
+    <title>CrowdRef Login</title>
     <style>
       body {
         min-width: 357px;
@@ -23,12 +34,10 @@
       -
       - [1]: http://developer.chrome.com/extensions/contentSecurityPolicy.html
      -->
-     <script src="popup.js"></script>
-     <script src="jquery.js"></script>
+    <script src="popup.js"></script>
   </head>
   <body>
-  <div id="lf" name="lf">
-    <form method="post" id="login_form" name="login_form">
+    <form method="post" action="http://crowdref.atwebpages.com/login.php">
       <table style="width:100%;">
         <tr>
           <td>Email</td>
@@ -39,14 +48,10 @@
           <td><input style="width:100%;" type="password" id="login_password" name="login_password" /></td>
         </tr>
         <tr>
-          <td colspan="2"><input style="width:100%;" type="button" value="submit"id="login_submit" name="login_submit"></td>
+          <td colspan="2"><input style="width:100%;" type="submit" id="login_submit" name="login_submit"></td>
         </tr>
       </table>
     </form>
-    </div>
-    <div id="sub_diag" style="display:none;">
-      <h1>Submitting...</h1>
-    </div>
   </body>
 </html>
 

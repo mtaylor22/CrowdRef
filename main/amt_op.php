@@ -167,7 +167,7 @@ function execute_job($reference_url, $ref_id){
 	// $url = 'http://crowdref.atwebpages.com/triggerscript.php';
 	$url = 'http://crowdref.atwebpages.com/ref_responder.php';
 	attach_trigger($hittype_id, $url);
-	print $hit->HITId . ' - ' . $hit->HITTypeId . '<br>';
+	// print $hit->HITId . ' - ' . $hit->HITTypeId . '<br>';
 }
 function execute_final_job($ref_id, $reference_url){
 	$hittype_id = create_review_request();
