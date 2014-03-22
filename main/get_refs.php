@@ -14,7 +14,14 @@ if ($_SESSION['user_logged']){
   <link rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
   <script src="//code.jquery.com/jquery-1.9.1.js"></script>
   <script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
-  <link rel="stylesheet" href="/resources/demos/style.css">
+  <style type="text/css">
+  	.ellipsis {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    width:300px;
+	}
+	</style>
   <script>
   <?php
   	foreach ($references as $key => $reference) {
@@ -32,7 +39,14 @@ if ($_SESSION['user_logged']){
 <div id="progressbar"></div>
    <?php
   	foreach ($references as $key => $reference) {
-		print $reference['url']. '<br><div id="progressbar_'.$reference['id'].'"></div>';
+  		$status = $reference['status'];
+  		if ($status < $status_cap)
+			$status_d = "Waiting for worker results";
+		else if ($status = $status_cap)
+			$status_d = "Waiting for final result";
+		else if ($status > $status_cap)
+			$status_d = "complete";
+		print '<p><div class="ellipsis"> Reference: <a href="'.$reference['url']. '">'. $reference['url'] . '</a></div>Status: '. $status_d  .'<br><div id="progressbar_'.$reference['id'].'"></div></p>';
 	}
   ?>
  
