@@ -170,6 +170,27 @@
 	    trigger("???");
 		return 4;
 	}
+	function handle_correct_reference($ref_id, $instance_id){
+		global $dbc, $db_connected;
+		if (!$db_connected) return 1;
+		try {
+			$sql = "INSERT INTO Refdatacorrect (title, author, website_title, publisher, date_published, date_accessed, medium, ref, workerid)
+					SELECT title, author, website_title, publisher, date_published, date_accessed, medium, ref, workerid
+					FROM Refdata
+					WHERE ref='". $ref_id ."' AND id='". $instance_id ."'";
+			$q = $dbc->prepare($sql);
+			$q->execute();
+		    return 0;
+		} catch(PDOException $e) {
+		    echo 'ERROR: ' . $e->getMessage();
+		    error_log('ERROR: ' . $e->getMessage());
+		    trigger("PDOException in add_ref_res: " . $e->getMessage());
+	        return 3;
+		}
+	    trigger("???");
+		return 4;
+
+	}
 	function trigger($value="hi"){
 		global $dbc, $db_connected;
 		if (!$db_connected) return 1;

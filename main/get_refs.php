@@ -26,8 +26,8 @@ if ($_SESSION['user_logged']){
   <?php
   	foreach ($references as $key => $reference) {
 		print ' $(function() {
-		    $( "#progressbar_'. $reference['id'] .'" ).progressbar({
-		      value: '.$reference['status'].', max: '. ($status_cap+1) .'
+		    $( "#progressbar_' . $reference['id'] . '" ).progressbar({
+		      value: ' . ($reference['status']+1) . ', max: ' . ($status_cap+2) . '
 		    });
 		  });';
 	}
