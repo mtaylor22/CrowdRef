@@ -1,7 +1,9 @@
-function getCookies(domain, name, callback) {
+function getCookies(domain, name, callback, elsecallback) {
     chrome.cookies.get({"url": domain, "name": name}, function(cookie) {
         if(callback) {
             callback(cookie.value);
+        } else {
+          elsecallback();
         }
     });
 }
@@ -12,9 +14,7 @@ function setCookie(domain, name, value){
 
 function getStatus(){
   jQuery.getJSON("http://crowdref.atwebpages.com/mobile_login.php", function(data) {
-    alert('hi');
-    if (data.status == 1)
-      setCookie("http://crowdref.atwebpages.com/mobile_login.php", "user_logged", "true");
+    return (data.status == "1");
   });
 }
 
@@ -23,15 +23,15 @@ function tryLogin(){
   $('#sub_diag').css("display", "block");
   $('#sub_diag').html("Logging in...");
   jQuery.post("http://crowdref.atwebpages.com/mobile_login.php", $("login_form").serialize(), function(data, textStatus) {
-    alert('hi');
+    alert(data.status);
     if (data.status = 1){
-      setCookie("http://crowdref.atwebpages.com/mobile_login.php", "user_logged", "true");
       $('#lf').css("display", "none");
       $('#sub_diag').css("display", "block");
       window.close();
     } else {
       $('#lf').css("display", "block");
       $('#sub_diag').css("display", "none");
+      return false;
     }
 }, "json");
 }
@@ -44,18 +44,22 @@ function submitRef(){
     if (data.status = "0"){
       window.refs++;
       chrome.browserAction.setBadgeText({text: window.refs.toString()});
+      $('#lf').css("display", "block");
+      $('#sub_diag').css("display", "none");
       window.close();
     }
     }, "json");
   });
 }
 document.addEventListener('DOMContentLoaded', function () {
-  chrome.tabs.executeScript(null, { file: "jquery.js" });
-  document.getElementById('login_submit').addEventListener('click', tryLogin);
-  getCookies("http://crowdref.atwebpages.com/mobile_login.php", "user_logged", function(id) {
-    $('#lf').css("display", "none");
-    $('#sub_diag').css("display", "block");
-    submitRef();
+  // chrome.tabs.executeScript(null, { file: "jquery.js" });
+  jQuery.getJSON("http://crowdref.atwebpages.com/mobile_login.php", function(data) {
+    if (data.status == "1"){
+      $('#lf').css("display", "none");
+      $('#sub_diag').css("display", "block");
+      submitRef();
+    } else {
+
+    }
   });
 });
-
