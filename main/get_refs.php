@@ -42,7 +42,7 @@ if ($_SESSION['user_logged']){
   		$status = $reference['status'];
   		if ($status < $status_cap)
 			$status_d = "Waiting for worker results";
-		else if ($status = $status_cap)
+		else if ($status == $status_cap)
 			$status_d = "Waiting for final result";
 		else if ($status > $status_cap)
 			$status_d = "complete";
