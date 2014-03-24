@@ -214,20 +214,32 @@
 			$q1 = "TRUNCATE Ref";
 			$q = $dbc->prepare($q1);
 			$q->execute();
-			$q2 = "TRUNCATE Refdata";
-			$q = $dbc->prepare($q2);
+			$q1 = "TRUNCATE Refdata";
+			$q = $dbc->prepare($q1);
 			$q->execute();
-			$q3 = "TRUNCATE trig";
-			$q = $dbc->prepare($q3);
+			$q1 = "TRUNCATE trig";
+			$q = $dbc->prepare($q1);
 			$q->execute();
-			$q4 = "ALTER TABLE Ref AUTO_INCREMENT = 1";
-			$q = $dbc->prepare($q4);
+			$q1 = "TRUNCATE Refdatacorrect";
+			$q = $dbc->prepare($q1);
 			$q->execute();
-			$q5 = "ALTER TABLE Refdata AUTO_INCREMENT = 1";
-			$q = $dbc->prepare($q5);
+			$q1 = "TRUNCATE Notification";
+			$q = $dbc->prepare($q1);
 			$q->execute();
-			$q6 = "ALTER TABLE trig AUTO_INCREMENT = 1";
-			$q = $dbc->prepare($q6);
+			$q1 = "ALTER TABLE Ref AUTO_INCREMENT = 1";
+			$q = $dbc->prepare($q1);
+			$q->execute();
+			$q1 = "ALTER TABLE Refdata AUTO_INCREMENT = 1";
+			$q = $dbc->prepare($q1);
+			$q->execute();
+			$q1 = "ALTER TABLE trig AUTO_INCREMENT = 1";
+			$q = $dbc->prepare($q1);
+			$q->execute();
+			$q1 = "ALTER TABLE Refdatacorrect AUTO_INCREMENT = 1";
+			$q = $dbc->prepare($q1);
+			$q->execute();
+			$q1 = "ALTER TABLE Notification AUTO_INCREMENT = 1";
+			$q = $dbc->prepare($q1);
 			$q->execute();
 			return 0;
 		} catch(PDOException $e) {
@@ -359,12 +371,25 @@
 		}
 		return false;
 	}
+	function get_references_by_id($id){
+		global $dbc, $db_connected;
+		if (!$db_connected) return -1;
+		try {
+			$data = $dbc->query('SELECT * FROM Ref WHERE id="'.$id.'"');
+			return $data->fetchAll (PDO::FETCH_ASSOC);
+		} catch(PDOException $e) {
+		    echo 'ERROR: ' . $e->getMessage();
+		    error_log('ERROR: ' . $e->getMessage());
+	        return false;
+		}
+		return false;
+	}
 
 	function get_notifications($user){
 		global $dbc, $db_connected;
 		if (!$db_connected) return -1;
 		try {
-			$data = $dbc->query('SELECT * FROM Notification WHERE user="'.$user.'"');
+			$data = $dbc->query('SELECT * FROM Notification WHERE email="'.$user.'"');
 			return $data;
 		} catch(PDOException $e) {
 		    echo 'ERROR: ' . $e->getMessage();
@@ -372,5 +397,23 @@
 	        return false;
 		}
 		return false;
+	}
+	function set_notification($action, $ref){
+		global $dbc, $db_connected;
+		if (!$db_connected) return false;
+		try {
+			$email = get_references_by_id($ref)[0]['user'];
+			$sql = "INSERT INTO Notification (email,action,ref) VALUES ('". $email ."','".$action."',".$ref.")";
+			$q = $dbc->prepare($sql);
+			$q->execute();
+		} catch(PDOException $e) {
+			trigger('error');
+			trigger($e->getMessage());
+		    trigger('Set Notification Error: ' . $e->getMessage());
+		    echo 'ERROR: ' . $e->getMessage();
+		    error_log('ERROR: ' . $e->getMessage()); 
+	        return false;
+		}
+		return true;
 	}
 ?>

@@ -14,6 +14,7 @@ try {
 			increment_status($result['ref_id']);
 			// trigger('result selected as '. $result['result_selection']);
 			handle_correct_reference($result['ref_id'], $result['result_selection']);
+			set_notification('ref_finished', $result['ref_id']);
 		}
 		$hit = new amt\minimal_hit($n->hit_id);
 		$hit->dispose();
