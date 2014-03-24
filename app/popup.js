@@ -42,8 +42,8 @@ function submitRef(){
   chrome.tabs.query({currentWindow: true, active: true}, function(tabs){
     jQuery.post("http://crowdref.atwebpages.com/mobile_submitref.php", {"ref_text": tabs[0].url}, function(data, textStatus) {
     if (data.status = "0"){
-      window.refs++;
-      chrome.browserAction.setBadgeText({text: window.refs.toString()});
+      // window.refs++;
+      // chrome.browserAction.setBadgeText({text: window.refs.toString()});
       $('#lf').css("display", "block");
       $('#sub_diag').css("display", "none");
       window.close();
