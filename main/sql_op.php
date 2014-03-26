@@ -384,6 +384,19 @@
 		}
 		return false;
 	}
+	function get_correct_references_by_id($id){
+		global $dbc, $db_connected;
+		if (!$db_connected) return -1;
+		try {
+			$data = $dbc->query('SELECT * FROM Refdatacorrect WHERE ref="'.$id.'"');
+			return $data->fetchAll (PDO::FETCH_ASSOC);
+		} catch(PDOException $e) {
+		    echo 'ERROR: ' . $e->getMessage();
+		    error_log('ERROR: ' . $e->getMessage());
+	        return false;
+		}
+		return false;
+	}
 
 	function get_notifications($user){
 		global $dbc, $db_connected;
