@@ -3,6 +3,7 @@ require 'sql_op.php';
 initialize();
 if ($_SESSION['user_logged']){
 	$notifications = get_notifications($_SESSION['email']);
+  mark_notifications_read($_SESSION['email']);
 }
 ?>
 
@@ -16,13 +17,28 @@ if ($_SESSION['user_logged']){
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
-    width:300px;
+    width:100%;
 	}
+  p{
+    margin:0;
+    padding: 0;
+  }
+  .viewed:nth-child(even){
+    background-color:#BBB;
+  }
+  .viewed:nth-child(odd){
+    background-color:#AAA;
+  }
+  .unviewed:nth-child(even){
+    background-color:#BBE;
+  }
+  .unviewed:nth-child(odd){
+    background-color:#AAD;
+  }
 	</style>
 </head>
 <body>
- 
-<div id="progressbar"></div>
+
    <?php
   	foreach ($notifications as $key => $notification) {
     $reference = get_references_by_id($notification['ref'])[0];
@@ -33,7 +49,7 @@ if ($_SESSION['user_logged']){
       default:
         $status = '?';
     }
-		print '<p><div class="ellipsis"> Reference: <a href="'.$reference['url']. '">'. $reference['url'] . '</a></div>Status: '. $status  .'</p>';
+		print '<div class="'. (($reference['viewed'] == 1)? 'unviewed' : 'viewed') .'"><p><div class="ellipsis"> Reference: <a href="'.$reference['url']. '">'. $reference['url'] . '</a></div>Status: '. $status  .'</p></div>';
 	}
   ?>
  

@@ -216,3 +216,6 @@ pip-log.txt
 
 # Secure information
 pass.php
+
+# Editor preferences
+*.sublime*

@@ -402,7 +402,7 @@
 		global $dbc, $db_connected;
 		if (!$db_connected) return -1;
 		try {
-			$sql='SELECT count(*) FROM Notification WHERE email="'.$user.'"';
+			$sql='SELECT count(*) FROM Notification WHERE email="'.$user.'" AND viewed=0';
 			$result = $dbc->prepare($sql);
 			$result->execute();
 			return $result->fetchColumn();
@@ -430,5 +430,22 @@
 	        return false;
 		}
 		return true;
+	}
+	function mark_notifications_read($user_email){
+		global $dbc, $db_connected;
+		if (!$db_connected) return false;
+		try {
+			$sql = "UPDATE Notification SET viewed = 1 WHERE email=:user_email";
+			$q = $dbc->prepare($sql);
+			$q->bindParam(':user_email', $user_email);
+			$q->execute();
+			return 0;
+		} catch(PDOException $e) {
+		    echo 'ERROR: ' . $e->getMessage();
+		    error_log('ERROR: ' . $e->getMessage());
+		    trigger('error updating pdo');
+	        return 1;
+		}
+		return 1;
 	}
 ?>

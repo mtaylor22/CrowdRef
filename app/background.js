@@ -3,7 +3,7 @@ function checkNotification(){
 	    if (data.status == "1"){
 	    	jQuery.getJSON("http://crowdref.atwebpages.com/mobile_get_notifications.php", function(notif) {
 	    		chrome.browserAction.setBadgeBackgroundColor({color: [80, 0, 0, 255] });
-      			chrome.browserAction.setBadgeText({text: notif.count});
+      			chrome.browserAction.setBadgeText({text: (notif.count > 0) ? notif.count: ""});
       			chrome.browserAction.setTitle({"title": "CroudRef: " + notif.count + " new references"});
 	    	});
 	    } else {
