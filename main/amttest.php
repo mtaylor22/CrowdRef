@@ -1,13 +1,9 @@
 <?php
-	session_start();
-	if (!isset($_SESSION['user_logged'])){
-		print 'you need to be logged in';
-		exit(1);
-	}
-	require 'amt_op.php';
+$url = 'http://www.googlkkkkkkkke.com';
+$header = @get_headers($url, 1);
+if ($header !== false)
+print substr($header[0], 9, 3);
+else 
+print 'doesn\'t exist';
 
-	// print amt_get_balance
-	// create_request();
-
-	execute_job('http://www.ebay.com/');
 ?> hit?
