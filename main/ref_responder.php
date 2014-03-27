@@ -19,7 +19,10 @@ try {
 			$status = get_status($result['ref_id']);
 			if ($status <= $status_cap){
 				//time to post final job collector
-				execute_final_job($result['ref_id'], get_ref_url($result['ref_id']));
+				trigger("refid: ". $result['ref_id']);
+				trigger("refurl: ". get_ref_url($result['ref_id']));
+
+				execute_final_job($result['ref_id'], get_ref_url(intval($result['ref_id'])));
 				// trigger('post final job');
 			}
 		}

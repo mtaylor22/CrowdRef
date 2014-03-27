@@ -94,7 +94,7 @@
 		global $dbc, $db_connected;
 		if (!$db_connected) return false;
 		try {
-			$data = $dbc->query('SELECT * FROM Ref WHERE id:'. $id );
+			$data = $dbc->query('SELECT * FROM Ref WHERE id='. $id );
 		    foreach($data as $row) {
 		    	$url = $row['url'];
 		    }
@@ -256,8 +256,7 @@
 			$output_str = '';
 			$stmt = $dbc->query('SELECT * FROM Refdata WHERE ref='. $ref_id );
 			while($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-				$output_str.='
-				<table border="0" cellpadding="0" cellspacing="5">
+				$output_str.='<table border="0" cellpadding="0" cellspacing="5">
 					<tbody>
 						<tr>
 							<td colspan="4"><b>Table #'. $row['id']. '</b></td>
@@ -265,37 +264,37 @@
 						<tr>
 							<td>Title of Document:</td>
 							<td>'.$row['title'].'</td>
-							<td><input id="title" name="title" value='.$row['title'].' /></td>
+							<td><input id="title" name="title" value="'.$row['title'].'" /></td>
 						</tr>
 						<tr>
 							<td>Author(s)/Editor(s):</td>
 							<td>'.$row['author'].'</td>
-							<td><input id="author" name="author" value='.$row['author'].'/></td>
+							<td><input id="author" name="author" value="'.$row['author'].'"/></td>
 						</tr>
 						<tr>
 							<td>Website Title:</td>
 							<td>'.$row['website_title'].'</td>
-							<td><input id="website_title" name="website_title" value='.$row['website_title'].' /></td>
+							<td><input id="website_title" name="website_title" value="'.$row['website_title'].'"/></td>
 						</tr>
 						<tr>
 							<td>Publisher:</td>
 							<td>'.$row['publisher'].'</td>
-							<td><input id="publisher" name="publisher" value='.$row['publisher'].' /></td>
+							<td><input id="publisher" name="publisher" value="'.$row['publisher'].'" /></td>
 						</tr>
 						<tr>
 							<td>Date Published:</td>
 							<td>'.$row['date_published'].'</td>
-							<td><input id="date_published" name="date_published" value='.$row['date_published'].' /></td>
+							<td><input id="date_published" name="date_published" value="'.$row['date_published'].'" /></td>
 						</tr>
 						<tr>
 							<td>Date Accessed:</td>
 							<td>'.$row['date_accessed'].'</td>
-							<td><input id="date_accessed" name="date_accessed" value='.$row['date_accessed'].' /></td>
+							<td><input id="date_accessed" name="date_accessed" value="'.$row['date_accessed'].'" /></td>
 						</tr>
 						<tr>
 							<td>Medium:</td>
 							<td>'.$row['medium'].'</td>
-							<td><input id="medium" name="medium" value='.$row['medium'].' /></td>
+							<td><input id="medium" name="medium" value="'.$row['medium'].'" /></td>
 						</tr>
 					</tbody>
 				</table>';
