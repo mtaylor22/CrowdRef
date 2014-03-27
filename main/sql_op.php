@@ -257,78 +257,49 @@
 			$stmt = $dbc->query('SELECT * FROM Refdata WHERE ref='. $ref_id );
 			while($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
 				$output_str.='
-				<table border="0" cellpadding="0" cellspacing="4">
+				<table border="0" cellpadding="0" cellspacing="5">
 					<tbody>
 						<tr>
-							<td colspan="2"><b>Table #'. $row['id']. '</b></td>
+							<td colspan="4"><b>Table #'. $row['id']. '</b></td>
 						</tr>
 						<tr>
-							<td>Title of Document</td>
+							<td>Title of Document:</td>
 							<td>'.$row['title'].'</td>
+							<td><input id="title" name="title" value='.$row['title'].' /></td>
 						</tr>
 						<tr>
-							<td>Author(s)/Editor(s)</td>
+							<td>Author(s)/Editor(s):</td>
 							<td>'.$row['author'].'</td>
+							<td><input id="author" name="author" value='.$row['author'].'/></td>
 						</tr>
 						<tr>
-							<td>Website Title</td>
+							<td>Website Title:</td>
 							<td>'.$row['website_title'].'</td>
+							<td><input id="website_title" name="website_title" value='.$row['website_title'].' /></td>
 						</tr>
 						<tr>
-							<td>Publisher</td>
+							<td>Publisher:</td>
 							<td>'.$row['publisher'].'</td>
+							<td><input id="publisher" name="publisher" value='.$row['publisher'].' /></td>
 						</tr>
 						<tr>
-							<td>Date Published</td>
+							<td>Date Published:</td>
 							<td>'.$row['date_published'].'</td>
+							<td><input id="date_published" name="date_published" value='.$row['date_published'].' /></td>
 						</tr>
 						<tr>
-							<td>Date Accessed</td>
+							<td>Date Accessed:</td>
 							<td>'.$row['date_accessed'].'</td>
+							<td><input id="date_accessed" name="date_accessed" value='.$row['date_accessed'].' /></td>
 						</tr>
 						<tr>
-							<td>Medium</td>
+							<td>Medium:</td>
 							<td>'.$row['medium'].'</td>
+							<td><input id="medium" name="medium" value='.$row['medium'].' /></td>
 						</tr>
 					</tbody>
 				</table>';
 		    }
-		    $output_str.='
-				<table border="0" cellpadding="0" cellspacing="4">
-					<tbody>
-						<tr>
-							<td colspan="2"><b>Correction Table</b></td>
-						</tr>
-						<tr>
-							<td>Title of Document</td>
-							<td><input id="title" name="title" /></td>
-						</tr>
-						<tr>
-							<td>Author(s)/Editor(s)</td>
-							<td><input id="author" name="author" /></td>
-						</tr>
-						<tr>
-							<td>Website Title</td>
-							<td><input id="website_title" name="website_title" /></td>
-						</tr>
-						<tr>
-							<td>Publisher</td>
-							<td><input id="publisher" name="publisher" /></td>
-						</tr>
-						<tr>
-							<td>Date Published</td>
-							<td><input id="date_published" name="date_published" /></td>
-						</tr>
-						<tr>
-							<td>Date Accessed</td>
-							<td><input id="date_accessed" name="date_accessed" /></td>
-						</tr>
-						<tr>
-							<td>Medium</td>
-							<td><input id="medium" name="medium" /></td>
-						</tr>
-					</tbody>
-				</table>';
 		    return $output_str;
 		} catch(PDOException $e) {
 			trigger('error in table gen');

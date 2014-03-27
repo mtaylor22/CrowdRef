@@ -52,15 +52,15 @@ function create_custom_hit($hit_type, $reference_url, $ref_id){
 		  <input type='hidden' value='". $reference_url ."' name='assignmentId' id='assignmentId'/>
 		  <input type='hidden' value='". $ref_id ."' name='ref_id' id='ref_id'/>
 		  <input type='hidden' value='". $reference_url ."' name='url' id='url'/>
-		  <h1>Hi, please help us gather reference information</h1>
+		  <h1>Hello, please help us gather reference information for a citation</h1>
 		  <p>Please go to <a href='". $reference_url ."'>". $reference_url ."</a> and answer the questions below</p>
 		  <p>What is the title of the webpage/post/article? <input name='title' id='title' type='text' /></p>
-		  <p>Who are the author(s)/editor(s) of the webpage (seperated by a semicolon)? ex: lastname, first; lastname2, first2 <input name='author' id='author' type='text' /></p>
+		  <p>Who are the author(s)/editor(s) of the webpage (seperated by a semicolon)? Example: Doe, John; Appleseed, Johnny <input name='author' id='author' type='text' /></p>
 		  <p>What was the title of the website itself? <input name='website_title' id='website_title' type='text' /></p>
 		  <p>Who published the webpage? <input name='publisher' id='publisher' type='text' /></p>
-		  <p>When was th webpage published? <input name='date_published' id='date_published' type='text' /></p>
+		  <p>When was the webpage published? <input name='date_published' id='date_published' type='text' /></p>
 		  <p>What is the date you accessed this? <input name='date_accessed' id='date_accessed' type='text' /></p>
-		  <p>What was the medium of the webpage? <input name='medium' id='medium' type='text' value='web'/></p>
+		  <p>What was the medium of the publication? <input name='medium' id='medium' type='text' value='web'/></p>
 		  <p><input type='submit' id='submitButton' value='Submit' /></p></form>
 		  <script language='Javascript'>turkSetAssignmentID();</script>
 		 </body>
@@ -121,11 +121,10 @@ function create_custom_review_hit($hit_type, $reference_url, $ref_id){
 		  <input type='hidden' value='". $ref_id ."' name='ref_id' id='ref_id'/>
 		  <input type='hidden' value='". $reference_url ."' name='url' id='url'/>  
 		  <input type='hidden' value='' name='workerId' id='workerId'/>
-		  <h1>Hi, please help us correct reference information</h1>
+		  <h1>Hello, please verify the following reference information.</h1>
 		  <p>Please go to <a href='". $reference_url ."'>". $reference_url ."</a> and answer the question below</p>
+		  <p>If there is a correction, edit the box on the right. Otherwise, leave it as is.</p>
 		  ". generate_comparison_table($ref_id) ."
-		  <p>Please select the option that best describes the reference</p>
-		  ". generate_table_options($ref_id) ."
 		  <p><input type='submit' id='submitButton' value='Submit' /></p></form>
 		<script language='Javascript'>turkSetAssignmentID();</script>
 		</body>
