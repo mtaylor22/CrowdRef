@@ -12,8 +12,18 @@ try {
 		foreach ($results as $result) {
 			$result->approve(); 
 			increment_status($result['ref_id']);
-			// trigger('result selected as '. $result['result_selection']);
-			handle_correct_reference($result['ref_id'], $result['result_selection']);
+			// handle_correct_reference($result['ref_id'], $result['result_selection']);
+			trigger('ref_id: '. $result['ref_id']);
+			trigger('title: '. $result['title']);
+			trigger('author: '. $result['author']);
+			trigger('website_title: '. $result['website_title']);
+			trigger('publisher: '. $result['publisher']);
+			trigger('date_published: '. $result['date_published']);
+			trigger('date_accessed: '. $result['date_accessed']);
+			trigger('medium: '. $result['medium']);
+			trigger('ref: '. $result['ref']);
+			trigger('WorkerId: '. $result['WorkerId']);
+			handle_correct_reference_specified($result['ref_id'], $result['title'], $result['author'], $result['website_title'], $result['publisher'], $result['date_published'], $result['date_accessed'], $result['medium'], $result['WorkerId']);
 			set_notification('ref_finished', $result['ref_id'], NULL);
 		}
 		$hit = new amt\minimal_hit($n->hit_id);

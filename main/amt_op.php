@@ -152,7 +152,6 @@ function create_custom_review_hit($hit_type, $reference_url, $ref_id){
 		  <input type='hidden' value='". $reference_url ."' name='assignmentId' id='assignmentId'/>
 		  <input type='hidden' value='". $ref_id ."' name='ref_id' id='ref_id'/>
 		  <input type='hidden' value='". $reference_url ."' name='url' id='url'/>  
-		  <input type='hidden' value='' name='workerId' id='workerId'/>
 		  <h1>Hello, please verify the following reference information.</h1>
 		  <p>Please go to <a href='". $reference_url ."'>". $reference_url ."</a> and answer the question below</p>
 		  <p>If there is a correction, edit the box on the right. Otherwise, leave it as is.</p>
