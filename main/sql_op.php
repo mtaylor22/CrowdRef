@@ -426,11 +426,13 @@
 		}
 		return false;
 	}
-	function set_notification($action, $ref){
+
+	function set_notification($action, $ref, $email=NULL){
 		global $dbc, $db_connected;
 		if (!$db_connected) return false;
 		try {
-			$email = get_references_by_id($ref)[0]['user'];
+			if ($email==NULL)
+				$email = get_references_by_id($ref)[0]['user'];	//this is so mturk can keep track
 			$sql = "INSERT INTO Notification (email,action,ref) VALUES ('". $email ."','".$action."',".$ref.")";
 			$q = $dbc->prepare($sql);
 			$q->execute();
