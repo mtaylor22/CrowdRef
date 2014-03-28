@@ -7,120 +7,10 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 	<title>CrowdRef</title>
 	<script type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>
-	<style type="text/css">
-		#container{
-			width: 100%;
-			height: 100%;
-			position: relative;
-		}
-		body{
-			height:100%;
-			width:100%;
-			padding:0px;
-			margin:0px;
-			font-family: Helvetica, Arial;
-		}
-		#left{
-			width: 20%;
-			background-color: #171E38;
-			height: 100%;
-			z-index: 0;
-			float: left;
-			position: relative;
-		}
-		#right{
-			float: left;
-			width: 80%;
-			height: 100%;
-			background-color: #BBB;
-			z-index: 0;
-		}
-		#banner_holder{
-			z-index: 2;
-			position: absolute;
-			top: 40%;
-			margin-top:-50px;
-			left:50%;
-			margin-left: -309;
-			background-color: #EEE;
-			opacity: 1;
-			padding: 20px;
-		}
-		h1,h2,h3,h4,h5,h6{
-			margin:0;
-			padding:0;
-		}
-		#login_container{
-			width:100%;
-			height:30px;
-			line-height:30px;
-			font-size:18px;
-			background-color:#AAA;
-			color:#171E38;
-			position:absolute;
-			bottom:0px;
-			text-align: center;
-			overflow:hidden;
-		}
-		#logout_link{
-			/* text-decoration:none; */
-			color:#333;
-		}
-		#login_handler{
-			height:100px;
-			background-color:#888;
-			width:100%;
-		}
-		table{
-			width:100%;
-		}
-		.login_text{
-			color:#333;
-			width:100%;
-			border:none;
-			outline:none;
-			background-color:#EEE;
-		}
-		.login_submit{
-			color:#333;
-			border:none;
-			outline:none;
-			background-color:#EEE;
-		}
-	</style>
-	<script type="text/javascript">
-		var slide_open = false; 
-		function login_slide_toggle(){
-			if (slide_open){
-				login_slide_closed();
-				slide_open=false;
-			} else {
-				login_slide_open();
-				slide_open=true;
-			}
-		}
-		function login_slide_open(){
-			$('#login_container').animate({height: "130px"}, 500);
-		}
-		function login_slide_closed(){
-			$('#login_container').animate({height: "30px"}, 500);
-		}
-		function ref_text_focus(){
-			if ($('#ref_text').val() == 'Enter URL'){
-				$('#ref_text').css('color', '#000');
-				$('#ref_text').val('');
-			}
-		}
-		function ref_text_unfocus(){
-			if ($('#ref_text').val() == ''){
-				$('#ref_text').css('color', '#444');
-				$('#ref_text').val('Enter URL');
-			}
-		}
-	</script>
+	<link rel="stylesheet" type="text/css" href="crowdref.css">
+	<script type="text/javascript" src="crowdref.js"></script>
 </head>
 <body>
-
 	<div id="container">
 		<div id="left">
 			<h3 style="font-family:Georgia; font-size:22px; text-align:center; font-weight:bold; margin-top:7px; padding:7px; color:#BBB; border-bottom: 2px #bbb dashed;">
@@ -147,7 +37,7 @@
 					if ($_SESSION['user_logged']){
 						print '<a href="logout.php">Logout</a>';
 					} else {
-						print '<h3 onclick="login_slide_toggle()">Click Here to Login</h3>';
+						print '<h3 style="cursor:pointer" onclick="login_slide_toggle()">Click Here to Login</h3>';
 					}
 				?>
 				</div>
