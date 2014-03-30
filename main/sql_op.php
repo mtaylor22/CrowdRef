@@ -442,6 +442,22 @@
 		return false;
 	}
 
+	function get_notification_count_all($user){
+		global $dbc, $db_connected;
+		if (!$db_connected) return -1;
+		try {
+			$sql='SELECT count(*) FROM Notification WHERE email="'.$user.'"';
+			$result = $dbc->prepare($sql);
+			$result->execute();
+			return $result->fetchColumn();
+		} catch(PDOException $e) {
+		    echo 'ERROR: ' . $e->getMessage();
+		    error_log('ERROR: ' . $e->getMessage());
+	        return false;
+		}
+		return false;
+	}
+
 	function set_notification($action, $ref, $email=NULL){
 		global $dbc, $db_connected;
 		if (!$db_connected) return false;

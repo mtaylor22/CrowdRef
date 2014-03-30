@@ -37,7 +37,7 @@ initialize();
 					Notifications
 				</h3>
 				<?php
-				$count = get_notification_count($_SESSION['email']);
+				$count = get_notification_count_all($_SESSION['email']);
 				if ($count > 0){
 					$notifications = get_notifications($_SESSION['email']);
 					mark_notifications_read($_SESSION['email']);
