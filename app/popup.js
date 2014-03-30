@@ -43,10 +43,10 @@ function submitRef(){
   $('#sub_diag').css("display", "block");
   $('#sub_diag').html("<h1>Submitting...</h1>");
   chrome.tabs.query({currentWindow: true, active: true}, function(tabs){
-    jQuery.post("http://crowdref.atwebpages.com/mobile_submitref.php", {"ref_text": tabs[0].url}, function(data, textStatus) {
+    jQuery.post("http://crowdref.atwebpages.com/mobile_submitref.php", {"ref_text": (encodeURIComponent(tabs[0].url))}, function(data, textStatus) {
     if (data.status = "0"){
       window.close();
-    }
+    } else {alert(data.status);}
     }, "json");
   });
 }

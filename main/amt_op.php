@@ -26,6 +26,7 @@ function create_request(){
 		$typeid = $r->execute();
 		return $typeid;
 	} catch (amt\Exception $e) {
+		trigger("Couldnt create request");
 		print $e->getMessage() . $e->xmldata();
 		error_log($e->getMessage() . $e->xmldata());
 	}
@@ -46,14 +47,15 @@ function create_custom_hit($hit_type, $reference_url, $ref_id){
 		 <head>
 		  <meta http-equiv='Content-Type' content='text/html; charset=UTF-8'/>
 		  <script type='text/javascript' src='https://s3.amazonaws.com/mturk-public/externalHIT_v1.js'></script>
+
 		 </head>
 		 <body>
 		  <form name='mturk_form' method='post' id='mturk_form' action='https://www.mturk.com/mturk/externalSubmit'>
-		  <input type='hidden' value='". $reference_url ."' name='assignmentId' id='assignmentId'/>
+		  <input type='hidden' value='' name='assignmentId' id='assignmentId'/>
 		  <input type='hidden' value='". $ref_id ."' name='ref_id' id='ref_id'/>
-		  <input type='hidden' value='". $reference_url ."' name='url' id='url'/>
+		  <input type='hidden' value='' name='url' id='url'/>
 		  <h1>Hello, please help us gather reference information for a citation</h1>
-		  <p>Please go to <a href='". $reference_url ."'>". $reference_url ."</a> and answer the questions below</p>
+		  <p>Please go to <a href='". ($reference_url) ."'>". ($reference_url) ."</a> and answer the questions below</p>
 		  <table>
 		  	<tbody>
 		  		<tr>
@@ -105,6 +107,8 @@ function create_custom_hit($hit_type, $reference_url, $ref_id){
 		$hit = $r->execute();   // after calling this, the HIT is 'assignable'
 		return $hit;
 	} catch (amt\Exception $e) {
+		trigger("COULDNT POST: ");
+		trigger($e->getMessage());
 		print $e->getMessage() . $e->xmldata();
 		error_log($e->getMessage() . $e->xmldata());
 	}
@@ -149,11 +153,11 @@ function create_custom_review_hit($hit_type, $reference_url, $ref_id){
 		 </head>
 		 <body>
 		  <form name='mturk_form' method='post' id='mturk_form' action='https://www.mturk.com/mturk/externalSubmit'>
-		  <input type='hidden' value='". $reference_url ."' name='assignmentId' id='assignmentId'/>
+		  <input type='hidden' value='' name='assignmentId' id='assignmentId'/>
 		  <input type='hidden' value='". $ref_id ."' name='ref_id' id='ref_id'/>
-		  <input type='hidden' value='". $reference_url ."' name='url' id='url'/>  
+		  <input type='hidden' value='' name='url' id='url'/>  
 		  <h1>Hello, please verify the following reference information.</h1>
-		  <p>Please go to <a href='". $reference_url ."'>". $reference_url ."</a> and answer the question below</p>
+		  <p>Please go to <a href='". ($reference_url) ."'>". ($reference_url) ."</a> and answer the question below</p>
 		  <p>If there is a correction, edit the box on the right. Otherwise, leave it as is.</p>
 		  ". generate_comparison_table($ref_id) ."
 		  <p><input type='submit' id='submitButton' value='Submit' /></p></form>
@@ -194,15 +198,15 @@ function reviewable_hits(){
 	}
 }
 function execute_job($reference_url, $ref_id){
+	$reference_url = htmlspecialchars(urldecode(stripslashes(nl2br($reference_url))));
 	$hittype_id = create_request();
 	$hit = create_custom_hit($hittype_id, $reference_url, $ref_id);
-	// $url = 'http://crowdref.atwebpages.com/triggerscript.php';
 	$url = 'http://crowdref.atwebpages.com/ref_responder.php';
 	attach_trigger($hittype_id, $url);
-	// print $hit->HITId . ' - ' . $hit->HITTypeId . '<br>';
 }
 function execute_final_job($ref_id, $reference_url){
 	$hittype_id = create_review_request();
+	$reference_url = htmlspecialchars(urldecode(stripslashes(nl2br($reference_url))));
 	$hit = create_custom_review_hit($hittype_id, $reference_url, $ref_id);
 	$url = 'http://crowdref.atwebpages.com/ref_final_responder.php';
 	attach_trigger($hittype_id, $url);

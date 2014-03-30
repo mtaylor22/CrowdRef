@@ -1674,7 +1674,7 @@ class assignment extends \ArrayObject {
     $this->accept_time = \strtotime($this['AcceptTime'] = (string)$r->AcceptTime);
     $this->submit_time = \strtotime($this['SubmitTime'] = (string)$r->SubmitTime);
     if ($r->Answer->exists()) {
-      $xml = \htmlspecialchars_decode($r->Answer);
+      $xml = ($r->Answer);
       $ans = \simplexml_load_string($xml, __NAMESPACE__ . '\\' . 'response');
       if (!$ans)
         throw new \RuntimeException("Failed to parse Answer\n$xml", E_USER_ERROR);

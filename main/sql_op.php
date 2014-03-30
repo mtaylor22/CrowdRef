@@ -217,7 +217,6 @@
 			$sql = "INSERT INTO trig (tgval) VALUES ('".$value."')";
 			$q = $dbc->prepare($sql);
 			$q->execute();
-			print 'inserted';
 			return 0;
 		} catch(PDOException $e) {
 		    echo 'ERROR: ' . $e->getMessage();
