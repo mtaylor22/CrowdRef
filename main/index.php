@@ -9,6 +9,8 @@
 	<script type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>
 	<link rel="stylesheet" type="text/css" href="crowdref.css">
 	<script type="text/javascript" src="crowdref.js"></script>
+	<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+	<link rel="icon" href="/favicon.ico" type="image/x-icon">
 </head>
 <body>
 	<div id="container">
@@ -35,7 +37,7 @@
 				<div id="login_control">
 				<?php 
 					if ($_SESSION['user_logged']){
-						print '<a href="logout.php">Logout</a>';
+						print '<a href="logout.php">Logout</a> <a href="account.php"> (Account)</a>';
 					} else {
 						print '<h3 style="cursor:pointer" onclick="login_slide_toggle()">Click Here to Login</h3>';
 					}

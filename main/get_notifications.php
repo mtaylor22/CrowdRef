@@ -39,30 +39,30 @@ if ($_SESSION['user_logged']){
 </head>
 <body>
 
-   <?php
-  	foreach ($notifications as $key => $notification) {
-    if ($notification['ref'] == -1){
-      switch ($notification['action']){
-        case 'bad_url':
-          $status="A URL you submitted was denied by te system because it is inaccessible or appears malicious.";
-          break;
-        default:
-          $status = '?';
-        }
-        print '<div class="'. (($reference['viewed'] == 1)? 'unviewed' : 'viewed') .'"><p>'. $status  .'</p></div>';
-    } else {
-      $reference = get_references_by_id($notification['ref'])[0];
-      switch ($notification['action']){
-        case 'ref_finished':
-          $status="Reference Finished";
-          break;
-        default:
-          $status = '?';
-      }
-  		print '<div class="'. (($reference['viewed'] == 1)? 'unviewed' : 'viewed') .'"><p><div class="ellipsis"> Reference: <a href="'.$reference['url']. '">'. $reference['url'] . '</a></div>Status: '. $status  .'</p></div>';
-  	}
+<?php
+foreach ($notifications as $key => $notification) {
+if ($notification['ref'] == -1){
+  switch (urldecode($notification['action'])){
+    case 'bad_url':
+      $status="A URL you submitted was denied by te system because it is inaccessible or appears malicious.";
+      break;
+    default:
+      $status = '?';
+    }
+    print '<div class="'. (($reference['viewed'] == 1)? 'unviewed' : 'viewed') .'"><p>'. $status  .'</p></div>';
+} else {
+  $reference = get_references_by_id($notification['ref'])[0];
+  switch (urldecode($notification['action'])){
+    case 'ref_finished':
+      $status="Reference Finished";
+      break;
+    default:
+      $status = '?';
   }
-  ?>
+	print '<div class="'. (($reference['viewed'] == 1)? 'unviewed' : 'viewed') .'"><p><div class="ellipsis"> Reference: <a href="'. urldecode($reference['url']). '">'. urldecode($reference['url']) . '</a></div>Status: '. $status  .'</p></div>';
+}
+}
+?>
  
 </body>
 </html>

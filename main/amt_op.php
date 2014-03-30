@@ -91,7 +91,7 @@ function create_custom_hit($hit_type, $reference_url, $ref_id){
 		  		<tr>
 		  			<td>What was the medium of the publication? </td>
 		  			<td>Web</td>
-		  			<td><input name='medium' id='medium' type='text' value='web'/></td>
+		  			<td><input name='medium' id='medium' type='text' value='Web'/></td>
 		  		</tr>
 		  	</tbody>
 		  </table>

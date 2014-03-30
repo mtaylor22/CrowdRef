@@ -201,9 +201,10 @@
 			$q->execute();
 		    return 0;
 		} catch(PDOException $e) {
+		    trigger("PDOException in add_ref_res: ");
+		    trigger($e->getMessage());
 		    echo 'ERROR: ' . $e->getMessage();
 		    error_log('ERROR: ' . $e->getMessage());
-		    trigger("PDOException in add_ref_res: " . $e->getMessage());
 	        return 3;
 		}
 	    trigger("???");
