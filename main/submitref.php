@@ -6,7 +6,7 @@
 		if (verify_link($_POST['ref_text']) > 0){
 			set_notification("bad_url", -1, $_SESSION['email']);
 		} else {
-			switch (add_reference($_POST['ref_text'])){
+			switch (add_reference(urlencode($_POST['ref_text']))){
 				case 0:
 					print 'ref added';
 					break;

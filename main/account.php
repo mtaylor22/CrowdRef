@@ -9,6 +9,11 @@ initialize();
 	<script type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>
 	<link rel="stylesheet" type="text/css" href="crowdref.css">
 	<style type="text/css">
+	.logout_url{
+	color:#333;
+	text-decoration: none;
+	font-weight: bold;
+	}
 	.ellipsis {
 	overflow: hidden;
 	white-space: nowrap;
@@ -32,31 +37,36 @@ initialize();
 					Notifications
 				</h3>
 				<?php
-				$notifications = get_notifications($_SESSION['email']);
-				mark_notifications_read($_SESSION['email']);
-				foreach ($notifications as $key => $notification) {
-					if ($notification['ref'] == -1){
-					  switch (urldecode($notification['action'])){
-					    case 'bad_url':
-					      $status="A URL you submitted was denied by te system because it is inaccessible or appears malicious.";
-					      break;
-					    default:
-					      $status = '?';
-					    }
-					    print '<div class="'. (($reference['viewed'] == 1)? 'unviewed' : 'viewed') .'"><p>'. $status  .'</p></div>';
-					} else {
-					  $reference = get_references_by_id($notification['ref'])[0];
-					  switch (urldecode($notification['action'])){
-					    case 'ref_finished':
-					      $status="Reference Finished";
-					      break;
-					    default:
-					      $status = '?';
-					  }
-						print '<div class="'. (($reference['viewed'] == 1)? 'unviewed' : 'viewed') .'"><p><div class="ellipsis"> Reference: <a href="'. urldecode($reference['url']). '">'. urldecode($reference['url']) . '</a></div>Status: '. $status  .'</p></div>';
+				$count = get_notification_count($_SESSION['email']);
+				if ($count > 0){
+					$notifications = get_notifications($_SESSION['email']);
+					mark_notifications_read($_SESSION['email']);
+					foreach ($notifications as $key => $notification) {
+						if ($notification['ref'] == -1){
+						  switch (urldecode($notification['action'])){
+						    case 'bad_url':
+						      $status="A URL you submitted was denied by te system because it is inaccessible or appears malicious.";
+						      break;
+						    default:
+						      $status = '?';
+						    }
+						    print '<div class="'. (($reference['viewed'] == 1)? 'unviewed' : 'viewed') .'"><p>'. $status  .'</p></div>';
+						} else {
+						  $reference = get_references_by_id($notification['ref'])[0];
+						  switch (urldecode($notification['action'])){
+						    case 'ref_finished':
+						      $status="Reference Finished";
+						      break;
+						    default:
+						      $status = '?';
+						  }
+							print '<div class="'. (($reference['viewed'] == 1)? 'unviewed' : 'viewed') .'"><p><div class="ellipsis"> Reference: <a href="'. urldecode($reference['url']). '">'. urldecode($reference['url']) . '</a></div>Status: '. $status  .'</p></div>';
+						}
 					}
+				} else {
+					print '<h3 style="font-weight:normal; color:#DDD">There are no notifications, get started creating some references!</h3>';
 				}
-			?>
+				?>
 			</div>
 			
 			
@@ -64,7 +74,7 @@ initialize();
 				<div id="login_control">
 				<?php 
 					if ($_SESSION['user_logged']){
-						print '<a href="logout.php">Logout</a><a href="/"> (Main)</a>';
+						print '<a class="logout_url" href="logout.php">Logout</a> | <a class="logout_url" href="/"> (Main)</a>';
 					} else {
 						print '<h3 style="cursor:pointer" onclick="login_slide_toggle()">Click Here to Login</h3>';
 					}

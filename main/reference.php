@@ -103,33 +103,39 @@ initialize();
 					Notifications
 				</h3>
 				<?php
-				$notifications = get_notifications($_SESSION['email']);
-				mark_notifications_read($_SESSION['email']);
-				foreach ($notifications as $key => $notification) {
-					if ($notification['ref'] == -1){
-					  switch (urldecode($notification['action'])){
-					    case 'bad_url':
-					      $status="A URL you submitted was denied by te system because it is inaccessible or appears malicious.";
-					      break;
-					    default:
-					      $status = '?';
-					    }
-					    print '<div class="'. (($reference['viewed'] == 1)? 'unviewed' : 'viewed') .'"><p>'. $status  .'</p></div>';
-					} else {
-					  $reference = get_references_by_id($notification['ref'])[0];
-					  switch (urldecode($notification['action'])){
-					    case 'ref_finished':
-					      $status="Reference Finished";
-					      break;
-					    default:
-					      $status = '?';
-					  }
-						print '<div class="'. (($reference['viewed'] == 1)? 'unviewed' : 'viewed') .'"><p><div class="ellipsis"> <b>Reference</b></a>: <a class="notification_url" href="'. urldecode($reference['url']). '">'. urldecode($reference['url']) . '</a></div><b>Status:</b> '. $status .'<br><a class="notification_url" href="reference.php?ref_id='. $reference['id'].'">View Reference</a></p></div>';
+				$count = get_notification_count($_SESSION['email']);
+				if ($count>0){
+					$notifications = get_notifications($_SESSION['email']);
+					mark_notifications_read($_SESSION['email']);
+					foreach ($notifications as $key => $notification) {
+						if ($notification['ref'] == -1){
+						  switch (urldecode($notification['action'])){
+						    case 'bad_url':
+						      $status="A URL you submitted was denied by te system because it is inaccessible or appears malicious.";
+						      break;
+						    default:
+						      $status = '?';
+						    }
+						    print '<div class="'. (($reference['viewed'] == 1)? 'unviewed' : 'viewed') .'"><p>'. $status  .'</p></div>';
+						} else {
+						  $reference = get_references_by_id($notification['ref'])[0];
+						  switch (urldecode($notification['action'])){
+						    case 'ref_finished':
+						      $status="Reference Finished";
+						      break;
+						    default:
+						      $status = '?';
+						  }
+							print '<div class="'. (($reference['viewed'] == 1)? 'unviewed' : 'viewed') .'"><p><div class="ellipsis"> <b>Reference</b></a>: <a class="notification_url" href="'. urldecode($reference['url']). '">'. urldecode($reference['url']) . '</a></div><b>Status:</b> '. $status .'<br><a class="notification_url" href="reference.php?ref_id='. $reference['id'].'">View Reference</a></p></div>';
+						}
 					}
+					print '<div style="width:100%; text-align:center"><a href="reference.php" style="text-decoration:none; font-family:Georgia; font-size:22px; margin:0 auto; font-weight:bold; margin-top:7px; padding:7px; color:#BBB;">
+						View All
+					</a></div>';
+				} else {
+					//no notifications
+					print '<h3 style="font-weight:normal; color:#DDD">There are no notifications, get started creating some references!</h3>';
 				}
-				print '<div style="width:100%; text-align:center"><a href="reference.php" style="text-decoration:none; font-family:Georgia; font-size:22px; margin:0 auto; font-weight:bold; margin-top:7px; padding:7px; color:#BBB;">
-					View All
-				</a></div>';
 			?>
 			</div>
 			
@@ -158,79 +164,92 @@ initialize();
 
 		<div id="right" style="position:absolute; width:80%;left:20%;">
 			<?php 
-			if (isset($_GET['ref_id'])){
-				$reference = get_references_by_id($_GET['ref_id'])[0];
-				print '
-				<div id="Account" class="unit_block">
-					<div class="unit_block_title"  style="width:100%; position:relative;">
-						<div class="ellipsis">
-						' . urldecode($reference['url']) . '
+			if ($count>0){
+				if (isset($_GET['ref_id'])){
+					$reference = get_references_by_id($_GET['ref_id'])[0];
+					print '
+					<div id="Account" class="unit_block">
+						<div class="unit_block_title"  style="width:100%; position:relative;">
+							<div class="ellipsis">
+							' . urldecode($reference['url']) . '
+							</div>
 						</div>
-					</div>
-					<p>';
-				$status = $reference['status'];
-		  		if ($status < $status_cap)
-					$status_d = "Waiting for worker results";
-				else if ($status == $status_cap)
-					$status_d = "Waiting for final result";
-				else if ($status > $status_cap)
-					$status_d = "complete";
-				if ($reference['status'] < $status_cap)
-					print '
-						<h2 class="unit_block_subtitle">Unfinished</h2>
-						Your reference is unfinished.
-						<br>
-						<h2 class="unit_block_subtitle">Status: '. $status_d .'</h2>						
-						<div id="progressbar_'.$reference['id'].'"></div>
-						<input type="input" readonly class="reference_input" value="'. urldecode($reference['url']).'"/>';
-				else {
-					print '
-						<h2 class="unit_block_subtitle">Reference</h2>
-						<div id="references_'. $reference['id'] .'"></div> <br>
-						<h2 class="unit_block_subtitle">Status: '. $status_d .'</h2>
-						<div id="progressbar_'.$reference['id'].'"></div>
-						<input type="input" readonly class="reference_input" value="'. urldecode($reference['url']).'"/>';
-				}
-				print '</p>
-				</div>';
-			} else {
-				foreach ($references as $key => $reference) {
-				print '
-				<div id="Account" class="unit_block">
-					<div class="unit_block_title"  style="width:100%; position:relative;">
-						<div class="ellipsis">
-						' . urldecode($reference['url']) . '
-						</div>
-					</div>
-					<p>';
-
-				if ($reference['status'] < $status_cap)
-					print '
-						<h2 class="unit_block_subtitle">Unfinished</h2>
-						Your reference is unfinished.
-						<br>
-						<div id="progressbar_'.$reference['id'].'"></div>
-						<input type="input" readonly class="reference_input" value="'. urldecode($reference['url']).'"/>
-						';
-				else {
-			  		$status = $reference['status'];
+						<p>';
+					$status = $reference['status'];
 			  		if ($status < $status_cap)
 						$status_d = "Waiting for worker results";
 					else if ($status == $status_cap)
 						$status_d = "Waiting for final result";
 					else if ($status > $status_cap)
 						$status_d = "complete";
+					if ($reference['status'] < $status_cap)
+						print '
+							<h2 class="unit_block_subtitle">Unfinished</h2>
+							Your reference is unfinished.
+							<br>
+							<h2 class="unit_block_subtitle">Status: '. $status_d .'</h2>						
+							<div id="progressbar_'.$reference['id'].'"></div>
+							<input type="input" readonly class="reference_input" value="'. urldecode($reference['url']).'"/>';
+					else {
+						print '
+							<h2 class="unit_block_subtitle">Reference</h2>
+							<div id="references_'. $reference['id'] .'"></div> <br>
+							<h2 class="unit_block_subtitle">Status: '. $status_d .'</h2>
+							<div id="progressbar_'.$reference['id'].'"></div>
+							<input type="input" readonly class="reference_input" value="'. urldecode($reference['url']).'"/>';
+					}
+					print '</p>
+					</div>';
+				} else {
+					foreach ($references as $key => $reference) {
 					print '
-						<h2 class="unit_block_subtitle">Reference</h2>
-						<div id="references_'. $reference['id'] .'"></div> <br>
-						<h2 class="unit_block_subtitle">Status: '. $status_d .'</h2>
-						<div id="progressbar_'.$reference['id'].'"></div>
-						<input type="input" readonly class="reference_input" value="'. urldecode($reference['url']).'"/>
-						';
+					<div id="Account" class="unit_block">
+						<div class="unit_block_title"  style="width:100%; position:relative;">
+							<div class="ellipsis">
+							' . urldecode($reference['url']) . '
+							</div>
+						</div>
+						<p>';
+
+					if ($reference['status'] < $status_cap)
+						print '
+							<h2 class="unit_block_subtitle">Unfinished</h2>
+							Your reference is unfinished.
+							<br>
+							<div id="progressbar_'.$reference['id'].'"></div>
+							<input type="input" readonly class="reference_input" value="'. urldecode($reference['url']).'"/>
+							';
+					else {
+				  		$status = $reference['status'];
+				  		if ($status < $status_cap)
+							$status_d = "Waiting for worker results";
+						else if ($status == $status_cap)
+							$status_d = "Waiting for final result";
+						else if ($status > $status_cap)
+							$status_d = "complete";
+						print '
+							<h2 class="unit_block_subtitle">Reference</h2>
+							<div id="references_'. $reference['id'] .'"></div> <br>
+							<h2 class="unit_block_subtitle">Status: '. $status_d .'</h2>
+							<div id="progressbar_'.$reference['id'].'"></div>
+							<input type="input" readonly class="reference_input" value="'. urldecode($reference['url']).'"/>
+							';
+					}
+					print '</p>
+					</div>';
+					}
 				}
-				print '</p>
-				</div>';
-				}
+			} else {
+				print '<div id="Account" class="unit_block">
+							<div class="unit_block_title" style="width:100%; position:relative;">
+								There isn\'t anything here, yet!
+							</div>
+							<p>
+								<h2 class="unit_block_subtitle">What Now?</h2>
+								Go <a href="/" style="color:#333">here</a> to start creating references, or download the Chrome Extension.</a>
+								<br>
+							</p>
+						</div>';
 			}
 			?>
 
