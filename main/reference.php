@@ -23,7 +23,8 @@ initialize();
 		font-family: arial; 
 		font-size:18px;
 		margin-top:5px;
-	}
+		background-color: #DDD;
+ 	}
 	.citation {
 	text-indent:-20px;
 	margin-left:20px;
@@ -126,6 +127,9 @@ initialize();
 						print '<div class="'. (($reference['viewed'] == 1)? 'unviewed' : 'viewed') .'"><p><div class="ellipsis"> <b>Reference</b></a>: <a class="notification_url" href="'. urldecode($reference['url']). '">'. urldecode($reference['url']) . '</a></div><b>Status:</b> '. $status .'<br><a class="notification_url" href="reference.php?ref_id='. $reference['id'].'">View Reference</a></p></div>';
 					}
 				}
+				print '<div style="width:100%; text-align:center"><a href="reference.php" style="text-decoration:none; font-family:Georgia; font-size:22px; margin:0 auto; font-weight:bold; margin-top:7px; padding:7px; color:#BBB;">
+					View All
+				</a></div>';
 			?>
 			</div>
 			
@@ -178,15 +182,14 @@ initialize();
 						<br>
 						<h2 class="unit_block_subtitle">Status: '. $status_d .'</h2>						
 						<div id="progressbar_'.$reference['id'].'"></div>
-						<h2 class="unit_block_subtitle">URL</h2>
-						<input type="input" class="reference_input" value="'. urldecode($reference['url']).'"/>';
+						<input type="input" readonly class="reference_input" value="'. urldecode($reference['url']).'"/>';
 				else {
 					print '
 						<h2 class="unit_block_subtitle">Reference</h2>
 						<div id="references_'. $reference['id'] .'"></div> <br>
 						<h2 class="unit_block_subtitle">Status: '. $status_d .'</h2>
 						<div id="progressbar_'.$reference['id'].'"></div>
-						<input type="input" class="reference_input" value="'. urldecode($reference['url']).'"/>';
+						<input type="input" readonly class="reference_input" value="'. urldecode($reference['url']).'"/>';
 				}
 				print '</p>
 				</div>';
@@ -207,7 +210,7 @@ initialize();
 						Your reference is unfinished.
 						<br>
 						<div id="progressbar_'.$reference['id'].'"></div>
-						<input type="input" class="reference_input" value="'. urldecode($reference['url']).'"/>
+						<input type="input" readonly class="reference_input" value="'. urldecode($reference['url']).'"/>
 						';
 				else {
 			  		$status = $reference['status'];
@@ -222,7 +225,7 @@ initialize();
 						<div id="references_'. $reference['id'] .'"></div> <br>
 						<h2 class="unit_block_subtitle">Status: '. $status_d .'</h2>
 						<div id="progressbar_'.$reference['id'].'"></div>
-						<input type="input" class="reference_input" value="'. urldecode($reference['url']).'"/>
+						<input type="input" readonly class="reference_input" value="'. urldecode($reference['url']).'"/>
 						';
 				}
 				print '</p>

@@ -274,52 +274,75 @@
 		try {
 			$output_str = '';
 			$stmt = $dbc->query('SELECT * FROM Refdata WHERE ref='. $ref_id );
-			while($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+
+			$result = $sth->fetchAll();
+			// while($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+			foreach ($result as &$row)
 				foreach ($row as &$rowelement) 
 					$rowelement = htmlspecialchars(urldecode(stripslashes(nl2br($rowelement))));
 				$output_str.='<table border="0" cellpadding="0" cellspacing="5">
 					<tbody>
 						<tr>
-							<td colspan="4"><b>Table #'. $row['id']. '</b></td>
+							<td colspan="'. count($result)+1 .'"><b>Table #'. $row['id']. '</b></td>
 						</tr>
 						<tr>
-							<td>Title of Document:</td>
-							<td>'.$row['title'].'</td>
-							<td><input id="title" name="title" value="'.$row['title'].'" /></td>
+							<td>Title of Document:</td>';
+			foreach ($result as &$row){
+				$prev_row=$row['title'];
+				$output_str.='<td>'.$row['title'].'</td>';
+			}
+			$output_str.='<td><input id="title" name="title" value="'.$prev_row.'" /></td>
 						</tr>
 						<tr>
-							<td>Author(s)/Editor(s):</td>
-							<td>'.$row['author'].'</td>
-							<td><input id="author" name="author" value="'.$row['author'].'"/></td>
+							<td>Author(s)/Editor(s):</td>';
+			foreach ($result as &$row){
+				$prev_row=$row['author'];
+				$output_str.='<td>'.$row['author'].'</td>';
+			}
+			$output_str.='<td><input id="author" name="author" value="'.$prev_row.'"/></td>
 						</tr>
 						<tr>
-							<td>Website Title:</td>
-							<td>'.$row['website_title'].'</td>
-							<td><input id="website_title" name="website_title" value="'.$row['website_title'].'"/></td>
+							<td>Website Title:</td>';
+			foreach ($result as &$row){
+				$prev_row=$row['website_title'];
+				$output_str.='<td>'.$row['website_title'].'</td>';
+			}
+			$output_str.='<td><input id="website_title" name="website_title" value="'.$prev_row.'"/></td>
 						</tr>
 						<tr>
-							<td>Publisher:</td>
-							<td>'.$row['publisher'].'</td>
-							<td><input id="publisher" name="publisher" value="'.$row['publisher'].'" /></td>
+							<td>Publisher:</td>';
+			foreach ($result as &$row){
+				$prev_row=$row['publisher'];
+				$output_str.='<td>'.$row['publisher'].'</td>';
+			}
+			$output_str.='<td><input id="publisher" name="publisher" value="'.$prev_row.'" /></td>
 						</tr>
 						<tr>
-							<td>Date Published:</td>
-							<td>'.$row['date_published'].'</td>
-							<td><input id="date_published" name="date_published" value="'.$row['date_published'].'" /></td>
+							<td>Date Published:</td>';
+			foreach ($result as &$row){
+				$prev_row=$row['date_published'];
+				$output_str.='<td>'.$row['date_published'].'</td>';
+			}
+			$output_str.='<td><input id="date_published" name="date_published" value="'.$prev_row.'" /></td>
 						</tr>
 						<tr>
-							<td>Date Accessed:</td>
-							<td>'.$row['date_accessed'].'</td>
-							<td><input id="date_accessed" name="date_accessed" value="'.$row['date_accessed'].'" /></td>
+							<td>Date Accessed:</td>';
+			foreach ($result as &$row){
+				$prev_row=$row['date_accessed'];
+				$output_str.='<td>'.$row['date_accessed'].'</td>';
+			}
+			$output_str.='<td><input id="date_accessed" name="date_accessed" value="'.$prev_row.'" /></td>
 						</tr>
 						<tr>
-							<td>Medium:</td>
-							<td>'.$row['medium'].'</td>
-							<td><input id="medium" name="medium" value="'.$row['medium'].'" /></td>
+							<td>Medium:</td>';
+			foreach ($result as &$row){
+				$prev_row=$row['medium'];
+				$output_str.='<td>'.$row['medium'].'</td>';
+			}
+			$output_str.='<td><input id="medium" name="medium" value="'.$prev_row.'" /></td>
 						</tr>
 					</tbody>
 				</table>';
-		    }
 		    return $output_str;
 		} catch(PDOException $e) {
 			trigger('error in table gen');
