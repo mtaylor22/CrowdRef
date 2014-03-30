@@ -275,7 +275,7 @@
 			$output_str = '';
 			$stmt = $dbc->query('SELECT * FROM Refdata WHERE ref='. $ref_id );
 
-			$result = $sth->fetchAll();
+			$result = $stmt->fetchAll();
 			// while($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
 			foreach ($result as &$row)
 				foreach ($row as &$rowelement) 
@@ -283,7 +283,7 @@
 				$output_str.='<table border="0" cellpadding="0" cellspacing="5">
 					<tbody>
 						<tr>
-							<td colspan="'. count($result)+1 .'"><b>Table #'. $row['id']. '</b></td>
+							<td colspan="'. (count($result)+1) .'"><b>Table #'. $row['id']. '</b></td>
 						</tr>
 						<tr>
 							<td>Title of Document:</td>';
@@ -343,6 +343,7 @@
 						</tr>
 					</tbody>
 				</table>';
+				trigger($output_str);
 		    return $output_str;
 		} catch(PDOException $e) {
 			trigger('error in table gen');

@@ -38,7 +38,7 @@ function create_custom_hit($hit_type, $reference_url, $ref_id){
 	global $status_cap;
 	try{
 		$annotation = 0;
-		$lifetime = 5*60;
+		$lifetime = 60*60;
 		$job_qty =  $status_cap;
 		$question = "<HTMLQuestion xmlns='http://mechanicalturk.amazonaws.com/AWSMechanicalTurkDataSchemas/2011-11-11/HTMLQuestion.xsd'>
 		<HTMLContent><![CDATA[
@@ -141,7 +141,7 @@ function create_custom_review_hit($hit_type, $reference_url, $ref_id){
 	global $status_cap;
 	try{
 		$annotation = 0;
-		$lifetime = 5*60;
+		$lifetime = 60*60;
 		$job_qty =  $status_cap;
 		$question = "<HTMLQuestion xmlns='http://mechanicalturk.amazonaws.com/AWSMechanicalTurkDataSchemas/2011-11-11/HTMLQuestion.xsd'>
 		<HTMLContent><![CDATA[
