@@ -274,6 +274,8 @@
 			$output_str = '';
 			$stmt = $dbc->query('SELECT * FROM Refdata WHERE ref='. $ref_id );
 			while($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+				foreach ($row as &$rowelement) 
+					$rowelement = htmlspecialchars(urldecode(stripslashes(nl2br($rowelement))));
 				$output_str.='<table border="0" cellpadding="0" cellspacing="5">
 					<tbody>
 						<tr>

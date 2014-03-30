@@ -11,7 +11,7 @@ try {
 		$results = new amt\results($n->hit_id);
 		foreach ($results as $result) {
 			$result->approve(); 
-			$arr = add_reference_result($result['title'], $result['author'], $result['website_title'], $result['publisher'], $result['date_published'], $result['date_accessed'], $result['medium'], $result['ref_id'], $result['WorkerId']);
+			$arr = add_reference_result(urlencode($result['title']), urlencode($result['author']), urlencode($result['website_title']), urlencode($result['publisher']), urlencode($result['date_published']), urlencode($result['date_accessed']), urlencode($result['medium']), urlencode($result['ref_id']), urlencode($result['WorkerId']));
 			if ($arr != 0) continue;
 			increment_status($result['ref_id']);
 			$status = get_status($result['ref_id']);
