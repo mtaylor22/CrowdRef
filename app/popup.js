@@ -58,7 +58,7 @@ function showOptions(){
 }
 function goto_account(){
   chrome.tabs.query({currentWindow: true, active: true}, function(tabs){
-    chrome.tabs.update(tabs[0].id, {url: 'http://crowdref.atwebpages.com/get_notifications.php'});
+    chrome.tabs.update(tabs[0].id, {url: 'http://crowdref.atwebpages.com/reference.php'});
   });
 }
 function goto_logout(){

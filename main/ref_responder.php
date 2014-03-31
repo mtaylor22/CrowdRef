@@ -1,6 +1,7 @@
 <?php
 require 'sql_op.php';
 initialize();
+trigger('hitresponder');
 try {
 	$hits_treated = array(); // prevent handling the same HIT twice
 	$notifications = amt\notification_response::acquire();
@@ -15,7 +16,7 @@ try {
 			if ($arr != 0) continue;
 			increment_status($result['ref_id']);
 			$status = get_status($result['ref_id']);
-			if ($status <= $status_cap){
+			if ($status >= $status_cap){
 				execute_final_job($result['ref_id'], get_ref_url(intval($result['ref_id'])));
 			}
 		}

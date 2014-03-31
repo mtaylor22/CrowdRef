@@ -129,7 +129,7 @@ initialize();
 							print '<div class="'. (($reference['viewed'] == 1)? 'unviewed' : 'viewed') .'"><p><div class="ellipsis"> <b>Reference</b></a>: <a class="notification_url" href="'. urldecode($reference['url']). '">'. urldecode($reference['url']) . '</a></div><b>Status:</b> '. $status .'<br><a class="notification_url" href="reference.php?ref_id='. $reference['id'].'">View Reference</a></p></div>';
 						}
 					}
-					print '<div style="width:100%; text-align:center"><a href="reference.php" style="text-decoration:none; font-family:Georgia; font-size:22px; margin:0 auto; font-weight:bold; margin-top:7px; padding:7px; color:#BBB;">
+					print '<div style="width:100%; padding-bottom:50px; text-align:center"><a href="reference.php" style="text-decoration:none; font-family:Georgia; font-size:22px; margin:0 auto; font-weight:bold; margin-top:7px; padding:7px; color:#BBB;">
 						View All
 					</a></div>';
 				} else {
@@ -164,6 +164,7 @@ initialize();
 
 		<div id="right" style="position:absolute; width:80%;left:20%;">
 			<?php 
+			$count = count(get_references($_SESSION['email']));
 			if ($count>0){
 				if (isset($_GET['ref_id'])){
 					$reference = get_references_by_id($_GET['ref_id'])[0];

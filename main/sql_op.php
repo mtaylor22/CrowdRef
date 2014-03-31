@@ -3,7 +3,7 @@
 	require 'pass.php';
 	require 'amt_op.php';
 	$db_connected = false;
-	$status_cap = 1;
+	$status_cap = 2;
 	function connect(){
 		global $db_connected, $db_name, $db_user, $db_pass, $db_host, $dbc;
 		try {
@@ -20,7 +20,6 @@
 	function initialize(){
 		global $db_connected;
 		$db_connected = connect();
-		//if ($db_connected)	print 'connected';
 	}
 
 	function user_add($user_email, $user_password){
@@ -78,7 +77,7 @@
 		global $dbc, $db_connected;
 		if (!$db_connected) return false;
 		try {
-			$data = $dbc->query('SELECT * FROM Ref WHERE id:'. $id );
+			$data = $dbc->query('SELECT * FROM Ref WHERE id='. $id );
 		    foreach($data as $row) {
 		    	$status = $row['status'];
 		    }
@@ -142,6 +141,21 @@
 		}
 		return false;
 	}
+	function reference_exists_correct($workerid, $ref_id){
+		global $dbc, $db_connected;
+		if (!$db_connected) return -1;
+		try {
+			$data = $dbc->query('SELECT * FROM Refdatacorrect WHERE ref='. $ref_id . ' AND workerid="'. $workerid . '"');
+		    foreach($data as $row) {
+		    	return true;
+		    }
+		} catch(PDOException $e) {
+		    echo 'ERROR: ' . $e->getMessage();
+		    error_log('ERROR: ' . $e->getMessage());
+	        return false;
+		}
+		return false;
+	}
 	function add_reference_result($title, $author, $website_title, $publisher, $date_published, $date_accessed, $medium, $ref, $workerid){
 		global $dbc, $db_connected;
 		if (!$db_connected) return 1;
@@ -194,6 +208,7 @@
 	function handle_correct_reference_specified($ref_id, $title, $author, $website_title, $publisher, $date_published, $date_accessed, $medium, $workerid){
 		global $dbc, $db_connected;
 		if (!$db_connected) return 1;
+		if (reference_exists_correct($workerid, $ref_id)) return 1; //prevent workerdata from being double-counted
 		try {
 			$sql = "INSERT INTO Refdatacorrect (title, author, website_title, publisher, date_published, date_accessed, medium, ref, workerid)
 					VALUES ('". $title . "', '". $author . "', '". $website_title . "', '". $publisher . "', '". $date_published . "', '". $date_accessed . "', '". $medium . "', '". $ref_id . "', '". $workerid . "')";
@@ -283,10 +298,13 @@
 				$output_str.='<table border="0" cellpadding="0" cellspacing="5">
 					<tbody>
 						<tr>
-							<td colspan="'. (count($result)+1) .'"><b>Table #'. $row['id']. '</b></td>
-						</tr>
+							<td><b>Table #'. $row['id']. '</b></td>';
+							foreach ($result as &$row)
+								$output_str.='<td><b>Respondant</b></td>';
+							$output_str.='<td><b>Correction</b></td>';
+			$output_str.='</tr>
 						<tr>
-							<td>Title of Document:</td>';
+							<td>Title of Document: <br><a style="font-size:12px; color:#333;">ex: A Passion to Pitch</a></td>';
 			foreach ($result as &$row){
 				$prev_row=$row['title'];
 				$output_str.='<td>'.$row['title'].'</td>';
@@ -294,7 +312,7 @@
 			$output_str.='<td><input id="title" name="title" value="'.$prev_row.'" /></td>
 						</tr>
 						<tr>
-							<td>Author(s)/Editor(s):</td>';
+							<td>Author(s)/Editor(s): <br><a style="font-size:12px; color:#333;">ex: Bearak, Barry</a></td>';
 			foreach ($result as &$row){
 				$prev_row=$row['author'];
 				$output_str.='<td>'.$row['author'].'</td>';
@@ -302,7 +320,7 @@
 			$output_str.='<td><input id="author" name="author" value="'.$prev_row.'"/></td>
 						</tr>
 						<tr>
-							<td>Website Title:</td>';
+							<td>Website Title:<br><a style="font-size:12px; color:#333;">ex: The New York Times</a></td>';
 			foreach ($result as &$row){
 				$prev_row=$row['website_title'];
 				$output_str.='<td>'.$row['website_title'].'</td>';
@@ -310,7 +328,7 @@
 			$output_str.='<td><input id="website_title" name="website_title" value="'.$prev_row.'"/></td>
 						</tr>
 						<tr>
-							<td>Publisher:</td>';
+							<td>Publisher:<br><a style="font-size:12px; color:#333;">ex: The New York Times Company</a></td>';
 			foreach ($result as &$row){
 				$prev_row=$row['publisher'];
 				$output_str.='<td>'.$row['publisher'].'</td>';
@@ -318,7 +336,7 @@
 			$output_str.='<td><input id="publisher" name="publisher" value="'.$prev_row.'" /></td>
 						</tr>
 						<tr>
-							<td>Date Published:</td>';
+							<td>Date Published:<br><a style="font-size:12px; color:#333;">ex: March 29, 2014</a></td>';
 			foreach ($result as &$row){
 				$prev_row=$row['date_published'];
 				$output_str.='<td>'.$row['date_published'].'</td>';
@@ -326,7 +344,7 @@
 			$output_str.='<td><input id="date_published" name="date_published" value="'.$prev_row.'" /></td>
 						</tr>
 						<tr>
-							<td>Date Accessed:</td>';
+							<td>Date Accessed:<br><a style="font-size:12px; color:#333;">ex: March 30, 2014</a></td>';
 			foreach ($result as &$row){
 				$prev_row=$row['date_accessed'];
 				$output_str.='<td>'.$row['date_accessed'].'</td>';
@@ -334,7 +352,7 @@
 			$output_str.='<td><input id="date_accessed" name="date_accessed" value="'.$prev_row.'" /></td>
 						</tr>
 						<tr>
-							<td>Medium:</td>';
+							<td>Medium: <br><a style="font-size:12px; color:#333;">ex: Web</a></td>';
 			foreach ($result as &$row){
 				$prev_row=$row['medium'];
 				$output_str.='<td>'.$row['medium'].'</td>';

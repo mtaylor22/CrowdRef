@@ -8,23 +8,28 @@
 		} else {
 			switch (add_reference(urlencode($_POST['ref_text']))){
 				case 0:
-					print 'ref added';
+					// print 'ref added';
+					header('location: message.php?message=submit');
 					break;
 				case 1:
-					print 'database is not connected';
+					// print 'database is not connected';
+					header('location: message.php?message=error');
 					break;
 				case 2:
-					print 'ref failed, you need to log in.';
+					// print 'ref failed, you need to log in.';
+					header('location: message.php?message=error');
 					break;
 				case 3:
-					print 'ref failed, mysql error:';
+					// print 'ref failed, mysql error:';
+					header('location: message.php?message=error');
 					break;
 				default:
-					print 'unknown status';
+					// print 'unknown status';
+					header('location: message.php?message=error');
 					break;
 				}
 		}
 	} else {
-		print 'How did you get here?';
+		header('location: message.php?message=error');
 	}
 ?>

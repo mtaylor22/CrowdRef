@@ -15,10 +15,10 @@ function amt_get_balance(){
 function create_request(){
 	try{
 		$r = new amt\hittype_request;
-		$title = "Gather information about a webpage or document";
+		$title = "7 Simple Questions - Gather Reference Information (title, author, etc)";
 		$description = "Using the given URL, you will be asked to gather simple information such as: title, author, date created, etc.";
-		$reward = 0.03;
-		$assignmentduration = 60*60;
+		$reward = 0.15;
+		$assignmentduration = 5*60*60;
 		$keywords = "Reference, citation, mla, apa, title, author";
 		$maxassignments = 1;
 		$autoapprovaldelay = 3600;
@@ -38,7 +38,7 @@ function create_custom_hit($hit_type, $reference_url, $ref_id){
 	global $status_cap;
 	try{
 		$annotation = 0;
-		$lifetime = 60*60;
+		$lifetime = 5*60*60;
 		$job_qty =  $status_cap;
 		$question = "<HTMLQuestion xmlns='http://mechanicalturk.amazonaws.com/AWSMechanicalTurkDataSchemas/2011-11-11/HTMLQuestion.xsd'>
 		<HTMLContent><![CDATA[
@@ -55,7 +55,8 @@ function create_custom_hit($hit_type, $reference_url, $ref_id){
 		  <input type='hidden' value='". $ref_id ."' name='ref_id' id='ref_id'/>
 		  <input type='hidden' value='' name='url' id='url'/>
 		  <h1>Hello, please help us gather reference information for a citation</h1>
-		  <p>Please go to <a href='". ($reference_url) ."'>". ($reference_url) ."</a> and answer the questions below</p>
+		  <p>Please go to visit <a href='". ($reference_url) ."'>". ($reference_url) ."</a> and answer the questions below</p>
+		  <p>(You may need to copy the url or hold alt and click to open in a new tab)</p>
 		  <table>
 		  	<tbody>
 		  		<tr>
@@ -118,10 +119,10 @@ function create_custom_hit($hit_type, $reference_url, $ref_id){
 function create_review_request(){
 	try{
 		$r = new amt\hittype_request;
-		$title = "Confirm or Supplement Webpage Reference information";
+		$title = "Review Reference information, 7 items (author, title), etc.)";
 		$description = "Using the given URL, you will be asked to check or correct supplied reference information such as author, title, etc.";
-		$reward = 0.03;
-		$assignmentduration = 60*60;
+		$reward = 0.20;
+		$assignmentduration = 5*60*60;
 		$keywords = "Reference, citation, mla, apa, title, author, review";
 		$maxassignments = 1;
 		$autoapprovaldelay = 3600;
@@ -141,7 +142,7 @@ function create_custom_review_hit($hit_type, $reference_url, $ref_id){
 	global $status_cap;
 	try{
 		$annotation = 0;
-		$lifetime = 60*60;
+		$lifetime = 5*60*60;
 		$job_qty =  $status_cap;
 		$question = "<HTMLQuestion xmlns='http://mechanicalturk.amazonaws.com/AWSMechanicalTurkDataSchemas/2011-11-11/HTMLQuestion.xsd'>
 		<HTMLContent><![CDATA[
@@ -157,8 +158,8 @@ function create_custom_review_hit($hit_type, $reference_url, $ref_id){
 		  <input type='hidden' value='". $ref_id ."' name='ref_id' id='ref_id'/>
 		  <input type='hidden' value='' name='url' id='url'/>  
 		  <h1>Hello, please verify the following reference information.</h1>
-		  <p>Please go to <a href='". ($reference_url) ."'>". ($reference_url) ."</a> and answer the question below</p>
-		  <p>If there is a correction, edit the box on the right. Otherwise, leave it as is.</p>
+		  <p>Please go to <a href='". ($reference_url) ."'>". ($reference_url) ."</a> and proceed.</p>
+		  <p>Below, there is reference information collected from several respondants. Please review this information and use it to copy the most appropriate responses for each question.<br> If none are correct, please supplement with correct information. Formatting is also very important, so please follow the examples in style.</p>
 		  ". generate_comparison_table($ref_id) ."
 		  <p><input type='submit' id='submitButton' value='Submit' /></p></form>
 		<script language='Javascript'>turkSetAssignmentID();</script>
@@ -203,6 +204,7 @@ function execute_job($reference_url, $ref_id){
 	$hit = create_custom_hit($hittype_id, $reference_url, $ref_id);
 	$url = 'http://crowdref.atwebpages.com/ref_responder.php';
 	attach_trigger($hittype_id, $url);
+	trigger( $hit->HITId . ' - ' . $hit->HITTypeId );
 }
 function execute_final_job($ref_id, $reference_url){
 	$hittype_id = create_review_request();
@@ -226,66 +228,5 @@ function get_hits(){
 }
 function get_hit_details($hit_id){
 	$hit = new amt\hit_details($hit_id);
-}
-function custom_hit_create(){
-	$title = "Gather information about a webpage or document";
-	$description = "Using the given URL, you will be asked to gather simple information such as: title, author, date created, etc.";
-	$question = "<HTMLQuestion xmlns='http://mechanicalturk.amazonaws.com/AWSMechanicalTurkDataSchemas/2011-11-11/HTMLQuestion.xsd'>
-	  <HTMLContent><![CDATA[
-	<!DOCTYPE html>
-	<html>
-	 <head>
-	  <meta http-equiv='Content-Type' content='text/html; charset=UTF-8'/>
-	  <script type='text/javascript' src='https://s3.amazonaws.com/mturk-public/externalHIT_v1.js'></script>
-	 </head>
-	 <body>
-	  <form name='mturk_form' method='post' id='mturk_form' action='https://www.mturk.com/mturk/externalSubmit'>
-	  <input type='hidden' value='' name='assignmentId' id='assignmentId'/>
-	  <h1>What's up?</h1>
-	  <p><textarea name='comment' cols='80' rows='3'></textarea></p>
-	  <p><input type='submit' id='submitButton' value='Submit' /></p></form>
-	  <script language='Javascript'>turkSetAssignmentID();</script>
-	 </body>
-	</html>
-	]]>
-	  </HTMLContent>
-	  <FrameHeight>450</FrameHeight>
-	</HTMLQuestion>";
-	$reward = 0.03;
-	$assignmentdurationinseconds = 60*60;
-	$lifetimeinseconds = 60*60;
-	$keywords = "Reference, citation, mla, apa, title, author";
-	$maxassignments = 1;
-	// $autoapprovaldelayinseconds = ;
-	// $qualificationrequirement = ;
-	// $assignmentreviewpolicy = ;
-	// $hitreviewpolicy = ;
-	// $requesterannotation = ;	
-	// $uniquerequesttoken = ;
-
-	/*
-	  The HITLayoutId allows you to use a pre-existing HIT design
-	  with placeholder values and create an additional HIT by providing
-	  those values as HITLayoutParameters. For more information, see HITLayout.
-	*/
-
-	// $hitlayoutid = ;
-
-	/*
-	  If the HITLayoutId is provided, any placeholder values must be filled in
-	  with values using the HITLayoutParameter structure. For more information,
-	  see HITLayout.
-	*/
-
-	// $hitlayoutparameter = ;
-	try{
-		$r = new amt\custom_hit_request($title, $description, $question, $reward, $assignmentdurationinseconds, $lifetimeinseconds, $keywords, $maxassignments);
-		$hit_id = $r->execute();   // after calling this, the HIT is 'assignable'
-		return $hit_id;
-	} catch (Exception $e) {
-		print $e->getMessage() . $e->xmldata();
-		error_log($e->getMessage() . $e->xmldata());
-	}
-	return 0;
 }
 ?>

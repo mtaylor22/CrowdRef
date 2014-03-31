@@ -3,8 +3,8 @@
 	initialize();
 	if (isset($_POST['login_submit'])){
 		if (user_login($_POST['login_email'], $_POST['login_password']))
-			print 'password accepted';
+			header('location: message.php?message=login');
 		else
-			print 'password denied';
+			header('location: message.php?message=error');
 	}
 ?>

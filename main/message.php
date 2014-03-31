@@ -6,23 +6,31 @@ initialize();
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 	<title>CrowdRef</title>
-	<script type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>
+  <link rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
+  <script src="//code.jquery.com/jquery-1.9.1.js"></script>
+  <script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
 	<link rel="stylesheet" type="text/css" href="crowdref.css">
 	<style type="text/css">
-	.logout_url{
-	color:#333;
-	text-decoration: none;
-	font-weight: bold;
-	}
 	.ellipsis {
 	overflow: hidden;
 	white-space: nowrap;
 	text-overflow: ellipsis;
 
 	}
+	.reference_input{
+		width:100%;
+		height:24px;
+		font-family: arial; 
+		font-size:18px;
+		margin-top:5px;
+		background-color: #DDD;
+ 	}
 	.citation {
 	text-indent:-20px;
 	margin-left:20px;
+	}
+	body{
+		background-color:#BBB;
 	}
 	.unit_block{
 		width:60%; position: relative;left:15%; margin-top:15px; background-color: #EEE; padding: 20px;
@@ -44,12 +52,52 @@ initialize();
 	}
 	</style>
 	<script type="text/javascript" src="crowdref.js"></script>
+	  <script type="text/javascript">
+    var references = new Array();
+    <?php
+	$references = get_references($_SESSION['email']);
+      foreach ($references as $key => $reference) {
+        if ($reference['status'] > $status_cap){
+          $correct_reference = get_correct_references_by_id($reference['id']);
+          print 'references['.$reference['id'].'] = new Array();';
+          print 'references['.$reference['id'].']["title"] = "'. urldecode($correct_reference[0]['title']) .'";';
+          print 'references['.$reference['id'].']["i"] = "'. $reference['id'] .'";';
+          print 'references['.$reference['id'].']["author"] = "'. urldecode($correct_reference[0]['author']) .'";';
+          print 'references['.$reference['id'].']["website_title"] = "'. urldecode($correct_reference[0]['website_title']) .'";';
+          print 'references['.$reference['id'].']["publisher"] = "'. urldecode($correct_reference[0]['publisher']) .'";';
+          print 'references['.$reference['id'].']["date_published"] = "'. urldecode($correct_reference[0]['date_published']) .'";';
+          print 'references['.$reference['id'].']["date_accessed"] = "'. urldecode($correct_reference[0]['date_accessed']) .'";';
+          print 'references['.$reference['id'].']["medium"] = "'. urldecode($correct_reference[0]['medium']) .'";';
+        }
+      }
+    ?>
+    function set_ref(id){
+      $('#references_'+id).html('<div class="citation">"'+references[id]['title']+'." <i>'+references[id]['website_title']+'</i>. '+references[id]['publisher']+', '+ references[id]['date_published'] + '. '+references[id]['medium']+'. '+references[id]['date_accessed']+"</div>");
+    }
+
+    $(document).ready(function(){
+      references.forEach(function(reference){
+        set_ref(reference['i']);
+      });
+    });
+  </script>
+  <script type="text/javascript">
+    <?php
+  	foreach ($references as $key => $reference) {
+		print ' $(function() {
+		    $( "#progressbar_' . $reference['id'] . '" ).progressbar({
+		      value: ' . ($reference['status']+1) . ', max: ' . ($status_cap+2) . '
+		    });
+		  });';
+	}
+  ?>
+  </script>
 	<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
 	<link rel="icon" href="/favicon.ico" type="image/x-icon">
 </head>
 <body>
-	<div id="container">
-		<div id="left">
+	<div id="container" >
+		<div id="left" style="position:fixed;">
 			<div id="what_is_content" style=" color:#AAA; font-family:arial; padding-left:7px; padding-right:7px; margin:0; position:relative; height:100%; overflow-y:auto;">
 				<h3 style="font-family:Georgia; font-size:22px; text-align:center; font-weight:bold; margin-top:7px; padding:7px; color:#BBB; border-bottom: 2px #bbb dashed;">
 					Notifications
@@ -90,13 +138,12 @@ initialize();
 				}
 			?>
 			</div>
-
 			
 			<div id="login_container">
 				<div id="login_control">
 				<?php 
 					if ($_SESSION['user_logged']){
-						print '<a class="logout_url" href="logout.php">Logout</a> | <a class="logout_url" href="/"> (Main)</a>';
+						print '<a class="logout_url" href="logout.php">Logout</a> | <a class="logout_url" href="account.php"> (Account)</a>';
 					} else {
 						print '<h3 style="cursor:pointer" onclick="login_slide_toggle()">Click Here to Login</h3>';
 					}
@@ -113,32 +160,48 @@ initialize();
 				</div>
 			</div>
 		</div>
-		<div id="right"></div>
-		<? if (!isset($_SESSION['user_logged']))
-			print 	'<div id="log_in" style="width:40%; position: absolute; top: 40%; margin-top:-50px; left:30%; background-color: #EEE; padding: 20px;">
-						<h1 style="color:#333; font-family:georgia; font-size:32px;border-bottom: 2px #333 dashed;"> You Need to Log In</h1>
+
+		<div id="right" style="position:absolute; width:80%;left:20%;">
+
+					<div id="Account" class="unit_block">
+						<div class="unit_block_title"  style="width:100%; position:relative;">
+							<div class="ellipsis">
+							<?php 
+								$output='Oops!';
+								$text="We're not really sure why you're here, are you?";
+								if (isset($_GET['message'])){
+									switch ($_GET['message']){
+										case 'login':
+											$output='You logged in.';
+											$text='You can now access internal features.';
+											break;
+										case 'logout':
+											$output='You logged out.';
+											$text='We\'ll see you later.';
+											break;
+										case 'submit':
+											$output='Done!';
+											$text='You submitted a reference. Thanks, we\'ll start working on that.';
+											break;
+										case 'error':
+											$output='Oops!';
+											$text='Something about that was not right.';
+											break;
+										default:
+											$output='Oops!';
+											$text="We're not really sure why you're here, are you?";
+									}
+								}
+								print $output;
+							?>
+							</div>
+						</div>
 						<p>
-							To View accont information, you should log in or create an account. <br>
-							<h2 style="margin:0;font-family:georgia; color:#333;">Benefits of Creating an Account</h2>
-							<ul style="margin-top:5px;">
-								<li>You can submit reference urls</li>
-								<li>We can generate and store your reference information</li>
-								<li>You can return at any time to collect your information</li>
-							</ul>
+							<?php print $text; ?>
 						</p>
-					</div>';
-			else
-				print '<div id="Account" style="width:40%; position: absolute; top: 20%; margin-top:-50px; left:30%; background-color: #EEE; padding: 20px;">
-							<h1 style="color:#333; font-family:georgia; font-size:32px;border-bottom: 2px #333 dashed;">Hello, '. $_SESSION['email']. '</h1>
-							<p>
-								Welcome to your account page. <br>
-								<h2 style="margin:0;font-family:georgia; color:#333;">Your Account</h2>
-								<ul style="margin-top:5px;">
-									<li>Notifications show up in the left column</li>
-								</ul>
-							</p>
-						</div>';
-			?>
+					</div>
+
+		</div>
 	</div>
 
 
