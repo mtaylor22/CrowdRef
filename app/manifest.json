@@ -14,11 +14,13 @@
     "default_popup": "popup.html"
   },
   "background": {
-    "scripts": ["background.js", "jquery.js"]
+    "scripts": ["background.js", "jquery.js", "bitset.js", "webtoolkit.md5.js"]
   },
   "permissions": [
     "http://crowdref.atwebpages.com/*",
     "cookies",
-    "tabs"
+    "tabs",
+    "storage",
+    "<all_urls>"
   ]
 }

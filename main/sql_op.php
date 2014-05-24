@@ -3,7 +3,7 @@
 	require 'pass.php';
 	require 'amt_op.php';
 	$db_connected = false;
-	$status_cap = 2;
+	$status_cap = 1;
 	function connect(){
 		global $db_connected, $db_name, $db_user, $db_pass, $db_host, $dbc;
 		try {
@@ -397,6 +397,19 @@
 		try {
 			$data = $dbc->query('SELECT * FROM Ref WHERE user="'.$user.'"');
 			return $data->fetchAll (PDO::FETCH_ASSOC);
+		} catch(PDOException $e) {
+		    echo 'ERROR: ' . $e->getMessage();
+		    error_log('ERROR: ' . $e->getMessage());
+	        return false;
+		}
+		return false;
+	}
+	function get_finished_reference_urls(){
+		global $dbc, $db_connected;
+		if (!$db_connected) return -1;
+		try {
+			$data = $dbc->query('SELECT * FROM Ref WHERE status>="'.$status_cap.'"');
+			return $data->fetchAll(PDO::FETCH_ASSOC);
 		} catch(PDOException $e) {
 		    echo 'ERROR: ' . $e->getMessage();
 		    error_log('ERROR: ' . $e->getMessage());
