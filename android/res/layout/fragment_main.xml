@@ -1,0 +1,68 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:gravity="center"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="com.mt.crowdref.MainActivity5" >
+
+    <TextView
+        android:id="@+id/textviewres"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:text="CrowdRef"
+        android:textColor="#555"
+        android:textSize="48sp"
+        android:textStyle="bold"
+  		android:gravity="center"
+        android:typeface="serif" />
+
+    <EditText
+        android:id="@+id/editText1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/imageView1"
+        android:layout_alignParentBottom="true"
+        android:ems="10"
+        android:lines="3"
+        android:maxLines="5" />
+
+    <ImageView
+        android:id="@+id/imageView1"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignBottom="@+id/editText1"
+        android:layout_alignLeft="@+id/textviewres"
+        android:layout_weight="0.68"
+        android:scaleType="fitCenter"
+        android:src="@drawable/abc_ab_bottom_solid_dark_holo" />
+    
+	<TextView
+        android:id="@+id/textView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:padding="80dp"
+        android:text="Enter a URL to Get Started!"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textColor="#AAA"
+        android:textColorHint="#FFF"
+        android:textColorLink="#FFF"
+        android:textSize="30sp" />
+
+	<Button
+	    android:id="@+id/button1"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_alignParentBottom="true"
+	    android:layout_alignParentRight="true"
+	    android:text="Submit" />
+
+</RelativeLayout>
