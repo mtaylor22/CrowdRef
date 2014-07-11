@@ -59,20 +59,22 @@ initialize();
       foreach ($references as $key => $reference) {
         if ($reference['status'] > $status_cap){
           $correct_reference = get_correct_references_by_id($reference['id']);
-          print 'references['.$reference['id'].'] = new Array();';
-          print 'references['.$reference['id'].']["title"] = "'. urldecode($correct_reference[0]['title']) .'";';
-          print 'references['.$reference['id'].']["i"] = "'. $reference['id'] .'";';
-          print 'references['.$reference['id'].']["author"] = "'. urldecode($correct_reference[0]['author']) .'";';
-          print 'references['.$reference['id'].']["website_title"] = "'. urldecode($correct_reference[0]['website_title']) .'";';
-          print 'references['.$reference['id'].']["publisher"] = "'. urldecode($correct_reference[0]['publisher']) .'";';
-          print 'references['.$reference['id'].']["date_published"] = "'. urldecode($correct_reference[0]['date_published']) .'";';
-          print 'references['.$reference['id'].']["date_accessed"] = "'. urldecode($correct_reference[0]['date_accessed']) .'";';
-          print 'references['.$reference['id'].']["medium"] = "'. urldecode($correct_reference[0]['medium']) .'";';
+          print 'references['.$reference['id'].'] = {';
+
+          print '"title": "'. 			urldecode($correct_reference[0]['title']) .			'", ';
+          print '"i": "'. 				$reference['id'] .									'", ';
+          print '"author": "'. 			urldecode($correct_reference[0]['author']) .		'", ';
+          print '"website_title": "'. 	urldecode($correct_reference[0]['website_title']) .	'", ';
+          print '"publisher": "'. 		urldecode($correct_reference[0]['publisher']) .		'", ';
+          print '"date_published": "'. 	urldecode($correct_reference[0]['date_published']) .'", ';
+          print '"date_accessed": "'. 	urldecode($correct_reference[0]['date_accessed']) .	'", ';
+          print '"medium": "'. 			urldecode($correct_reference[0]['medium']) .		'" };';
         }
       }
     ?>
     function set_ref(id){
-      $('#references_'+id).html('<div class="citation">"'+references[id]['title']+'." <i>'+references[id]['website_title']+'</i>. '+references[id]['publisher']+', '+ references[id]['date_published'] + '. '+references[id]['medium']+'. '+references[id]['date_accessed']+"</div>");
+    	var template_mla = '<div class="citation">"{{title}}." <i>{{website_title}}</i>. {{publisher}}, {{date_published}}. {{medium}}. {{date_accessed}}</div>';
+      	$('#references_'+id).html(Mustache.to_html(template_mla, references[id]));
     }
 
     $(document).ready(function(){
@@ -258,6 +260,6 @@ initialize();
 	</div>
 
 
-
+	<script src = "//cdnjs.cloudflare.com/ajax/libs/mustache.js/0.8.1/mustache.min.js"></script>
 </body>
 </html>
